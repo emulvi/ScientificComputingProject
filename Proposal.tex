@@ -1,0 +1,58 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{DASgenerator}
+\usepackage{pifont}
+\usepackage{setspace}
+
+\renewcommand{\baselinestretch}{1.5} 
+
+%----University of Bristol Data Access Statement generator v01 16/06/2016----
+%% DASgenerator.sty
+%% Copyright 2016 University of Bristol Research Data Service
+%
+% This work may be distributed and/or modified under the conditions of the LaTeX Project Public License, either version 1.3 of this license or (at your option) any later version. The latest version of this license is in http://www.latex-project.org/lppl.txt and version 1.3 or later is part of all distributions of LaTeX version 2005/12/01 or later.
+%
+% This work has the LPPL maintenance status `maintained'.
+% 
+% The Current Maintainer of this work is University of Bristol Research Data Service (data-bris@bristol.ac.uk)
+%
+% This work consists of the files DASgenerator.sty and DASgenerator.tex
+
+\title{Scientific Computing Final Project}
+\author{Sahil, Ellen, Blair}
+\date{November 2016}
+
+\begin{document}
+
+\maketitle
+
+\section{Narrative}
+
+
+\subsection{Motivation}
+A core goal in computational physics and chemistry is to understand and better approximate the wave function and energy of a quantum many-body system.  This must be done in an efficient and accurate matter.  One of the first methods used to make such an approximation was the Hartree-Fock method.  Improvements beyond Hartree Fock such as Coupled Cluster, Density Functional Theory, Green's Function methods, and MP2 are most often studied today.  While these extended methods and approximations are focused on to find solutions to the Schrodinger Equation of chemical systems, Hartree-Fock is generally the central starting point for these more elaborate methods.  \newline
+\newline
+Two major problems obstruct computational physicists and chemists from using these methods to find solutions to the chemical systems they are studying:
+
+\begin{enumerate} 
+    \item The approximations made in the method break down and do not properly describe the correlation in the material of interest.
+    \item The method is computationally expensive.  Oftentimes the major expense comes from a bottleneck within the procedure.
+\end{enumerate} 
+
+\subsection{Overview}
+As an educational exercise, we propose to optimize parts of a naively written Hartree-Fock and MP2 code.  In edition, we will build a TriBITS project with unit tests to prove that the method of optimization does indeed improve efficiency.  We will attempt to write an object oriented Hartree-Fock code to create a formal library that can be easily called in other methods.  To test optimization, we will use loop unrolling in the Hartree-Fock code and as well as implement a Cholesky Tensorial decomposition in the computationally expensive bottleneck ($0(N^{5})$) transformation from the atomic orbital to the molecular orbital basis in MP2.  We should be able to see that the optimized objects perform faster on a large enough system  than the naively implemented objects.\newline \newline
+As a side note, we would like to mention that these methods we would like to implement are far from novel; however, we work with methods that rely on Hartree-Fock and MP2 calculations on a daily basis. A firmer understanding of the process, practicing common optimization schemes, and creating our own working library of these methods will be of great benefit to our own research progress.  
+
+
+\section{Execution Plan}
+The execution plan containing the tasks to completed by each member of our group or listed in the table on the following page.\newline \newline
+\begin{tabular}{p{4cm}|p{7.5cm}}
+     \large{\textbf{Group Member} \ldots} & \large{\textbf{Tasks} \ldots} \\ \hline \hline
+     \textbf{Blair} & \ding{212} Rewrite object oriented SCF procedure \newline \ding{212} Implement Cholesky Tensorial Decomposition in MP2 calculation \newline \ding{212} Create tribits project \\  \hline 
+     \textbf{Sahil} & \ding{212} Write unit tests to compare speed of chosen procedures \newline \ding{212} Implement loop unrolling in Hartree-Fock procedure \newline Create tribits project \\ \hline
+     \textbf{Ellen} & \ding{212} Transform integrals in MP2 calculation and evaluate MP2 energy \newline \ding{212} Implement Cholesky Tensorial Decomposition in MP2 calculation \newline \ding{212} Create tribits project  \\ \hline
+
+\end{tabular}
+
+
+\end{document}
