@@ -1,25 +1,31 @@
 #include <iostream>
 #include <time.h> // time
 #include <stdlib.h> // srand
- 
+#include <iomanip>
+#include <omp.h> 
 using namespace std;
 
+int main(int argc, char *argv[]){
+
 double findPi(const int);
+double Pi;
+const int N={1e5};
+int nthreads;
+int tid;
+double Pi_seed[nthreads];
 
-int main(){
-const int N={1e3};
-int num_proc=5;
-double Pi_seed[num_proc];
-    for (int j=0; j<num_proc; j++){
-        Pi_seed[j]=findPi(N);
-        cout << "Pi at processor " << j << " is: " <<Pi_seed[j] << endl;
-    }
+#pragma omp parallel for(nthreads,tid)
+
+    {
+    tid = omp_get_thread_num();
+    Pi_seed[tid]=findPi(N);
+    cout << "Pi at processor " << tid << " is: " <<Pi_seed[tid] << endl;}
+
 }
-
-
 double findPi(const int N) {
     srand(time(NULL));
-    cout.precision(10);
+    cout.precision(100);
+    srand(time(0));
     int circle = 0;
     for (int i = 0; i < N; i ++) {
         double x = static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
