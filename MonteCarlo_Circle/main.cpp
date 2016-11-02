@@ -10,18 +10,39 @@ int main(int argc, char *argv[]){
 double findPi(const int);
 double Pi;
 const int N={1e5};
-int nthreads;
-int tid;
-double Pi_seed[nthreads];
+//int nthreads;
+//int tid;
+double Pi_seed[4];
 
-#pragma omp parallel for(nthreads,tid)
+//#pragma omp parallel private(nthreads,tid)
+#pragma omp parallel for
+for (int i=0; i<4; ++i){
+    //tid = omp_get_thread_num();
+    Pi_seed[i]=findPi(N);
+    //cout << "Pi at processor " << i << " is: " <<Pi_seed[i] << endl;
+  /* Only master thread does this */
+   // if (tid == 0) 
+    //{
+    //nthreads = omp_get_num_threads();
+    //printf("Number of threads = %d\n", nthreads);
 
-    {
-    tid = omp_get_thread_num();
-    Pi_seed[tid]=findPi(N);
-    cout << "Pi at processor " << tid << " is: " <<Pi_seed[tid] << endl;}
+    //}
+
+    }
+for (int i=0; i<4; ++i){
+cout << "Pi at processor " << i << " is: " << Pi_seed[i] << endl;
+}
+double sum_pi=0;
+for (int i=0; i<4; ++i){
+    sum_pi = sum_pi + Pi_seed[i];
+}
+
+cout << "The final value of pi is " << sum_pi /4.0 << endl;
+
 
 }
+
+
 double findPi(const int N) {
     srand(time(NULL));
     cout.precision(100);
