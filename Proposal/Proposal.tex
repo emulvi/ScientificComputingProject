@@ -1,10 +1,30 @@
 \documentclass{article}
+\usepackage[top=1in, bottom=1in, left=1.2in, right=1.2in]{geometry}  
 \usepackage[utf8]{inputenc}
 \usepackage{DASgenerator}
 \usepackage{pifont}
 \usepackage{setspace}
 
 \renewcommand{\baselinestretch}{1.5} 
+\setlength{\parindent}{0pt}
+
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+	\setlist{nosep}
+
+\usepackage[dvipsnames]{xcolor}
+\usepackage[unicode=true, colorlinks=true, linkcolor=blue, citecolor=blue]{hyperref}
+\usepackage[english]{cleveref}
+
+\usepackage[square,numbers,sort&compress]{natbib}
+\bibliographystyle{apalike}
+
+\newcommand{\mbf}[1]{\mathbf{#1}}
+\newcommand{\tbf}[1]{\textbf{#1}}
+\newcommand{\bra}[1]{\left\langle #1 \right|}
+\newcommand{\ket}[1]{\left| #1 \right\rangle}
+\newcommand{\inp}[2]{\left\langle #1 | #2 \right\rangle}
+\newcommand{\outp}[2]{\ket{#1}\!\bra{#2}}
 
 %----University of Bristol Data Access Statement generator v01 16/06/2016----
 %% DASgenerator.sty
@@ -19,7 +39,7 @@
 % This work consists of the files DASgenerator.sty and DASgenerator.tex
 
 \title{Scientific Computing Final Project}
-\author{Sahil, Ellen, Blair}
+\author{Sahil Chhabra, Ellen Mulvihill, Blair Winograd}
 \date{November 2016}
 
 \begin{document}
@@ -30,9 +50,8 @@
 
 
 \subsection{Motivation}
-A core goal in computational physics and chemistry is to understand and better approximate the wave function and energy of a quantum many-body system.  This must be done in an efficient and accurate matter.  One of the first methods used to make such an approximation was the Hartree-Fock method.  Improvements beyond Hartree Fock such as Coupled Cluster, Density Functional Theory, Green's Function methods, and MP2 are most often studied today.  While these extended methods and approximations are focused on to find solutions to the Schrodinger Equation of chemical systems, Hartree-Fock is generally the central starting point for these more elaborate methods.  \newline
-\newline
-Two major problems obstruct computational physicists and chemists from using these methods to find solutions to the chemical systems they are studying:
+\quad A core goal in computational physics and chemistry is to understand and better approximate the wave function and energy of a quantum many-body system.  This must be done in an efficient and accurate matter.  One of the first methods used to make such an approximation was the Hartree-Fock method.  Improvements beyond Hartree Fock such as Coupled Cluster, Density Functional Theory, Green's Function methods, and MP2 are most often studied today.  While these extended methods and approximations are focused on to find solutions to the Schr\"{o}dinger Equation of chemical systems, Hartree-Fock is generally the central starting point for these more elaborate methods.  \newline
+\par \quad Two major problems obstruct computational physicists and chemists from using these methods to find solutions to the chemical systems they are studying:
 
 \begin{enumerate} 
     \item The approximations made in the method break down and do not properly describe the correlation in the material of interest.
@@ -40,19 +59,51 @@ Two major problems obstruct computational physicists and chemists from using the
 \end{enumerate} 
 
 \subsection{Overview}
-As an educational exercise, we propose to optimize parts of a naively written Hartree-Fock and MP2 code.  In edition, we will build a TriBITS project with unit tests to prove that the method of optimization does indeed improve efficiency.  We will attempt to write an object oriented Hartree-Fock code to create a formal library that can be easily called in other methods.  To test optimization, we will use loop unrolling in the Hartree-Fock code and as well as implement a Cholesky Tensorial decomposition in the computationally expensive bottleneck ($0(N^{5})$) transformation from the atomic orbital to the molecular orbital basis in MP2.  We should be able to see that the optimized objects perform faster on a large enough system  than the naively implemented objects.\newline \newline
-As a side note, we would like to mention that these methods we would like to implement are far from novel; however, we work with methods that rely on Hartree-Fock and MP2 calculations on a daily basis. A firmer understanding of the process, practicing common optimization schemes, and creating our own working library of these methods will be of great benefit to our own research progress.  
+\quad As an educational exercise, we propose to focus on point two mentioned above. To further explore this deficit, we will optimize parts of a naively written Hartree-Fock and MP2 code.  In addition, we will build a TriBITS project with unit tests to prove that the method of optimization does indeed improve efficiency.  
+%We will attempt to write an object-oriented Hartree-Fock code to create a formal library that can be easily called in other methods.  
+To test optimization, we will use loop unrolling in the Hartree-Fock code as well as implement a Cholesky Tensorial decomposition in the computationally expensive bottleneck ($\mathcal{O}(N^{5})$) transformation from the atomic orbital to the molecular orbital basis in MP2.  With a sufficiently large system, we should be able to see that the optimized objects perform faster than the naively implemented objects.\newline 
+\par \quad As a side note, we would like to mention that these methods we would like to implement are far from novel; however, we work with methods that rely on Hartree-Fock and MP2 calculations on a daily basis. A firmer understanding of the process, practicing common optimization schemes, and creating our own working library of these methods will be of great benefit to our own research progress.  
+
+\section{Algorithms}
+\quad The Hartree-Fock algorithm will be developed based on the procedure outlined in Section 3.4.6 of Ref.\,\cite{MQC}, given below: 
+\begin{enumerate}
+\item Specify a molecule (a set of nuclear coordinates $\{ \mathbf{R}_A\}$, atomic numbers $\{ Z_A\}$, and number of electrons $N$) and a basis set $\{\phi_{\mu}\}$. 
+\item Calculate all required molecular integrals, $S_{\mu \nu}$, $H_{\mu\nu}^{\text{core}}$, and $(\mu\nu | \lambda\rho)$.
+\item Diagonalize the overlap matrix \textbf{S} and obtain a transformation matrix \textbf{X} from either $\mathbf{X} \equiv \mathbf{S}^{-1/2} = \mathbf{Us}^{-1/2}\mathbf{U}^{\dagger}$ or $\mbf{X} = \mbf{Us}^{-1/2}$.
+\item Obtain a guess at the density matrix \textbf{P}.
+\item Calculate the matrix \textbf{G} of $F_{\mu\nu} = H_{\mu\nu}^{\text{core}} + G_{\mu\nu}$ from the density matrix \tbf{P} and the two-electron integrals $(\mu\nu | \lambda \rho)$.
+\item Add \tbf{G} to the core-Hamiltonian to obtain the Fock matrix $\mbf{F} = \mbf{H}^{\text{core}} + \mbf{G}$.
+\item Calculate the transformed Fock matrix $\mbf{F}' = \mbf{X}^{\dagger}\mbf{FX}$.
+\item Diagonalize \tbf{F}' to obtain \tbf{C}' and $\boldsymbol{\varepsilon}$.
+\item Calculate $\mbf{C} = \mbf{XC}'$.
+\item Form a new density matrix \tbf{P} from \tbf{C} using $P_{\mu\nu} = 2\sum\limits_a^{N/2} C_{\mu a} C_{\nu a}^*$.
+\item Determine whether the procedure has converged, i.e., determine whether the new density matrix of step (10) is the same as the previous density matrix within a specified criterion. If the procedure has not converged, return to step (5) with the new density matrix.
+\item If the procedure has converged, then use the resultant solution, represented by \tbf{C}, \tbf{P}, \tbf{F}, etc., to calculate expectation values and other quantities of interest.
+\end{enumerate}
+\par \quad
+\par \quad The MP2 algorithm will be developed based on equations given in Section 6.5 of Ref.\,\cite{MQC}. The procedure can be outlined as: 
+\begin{enumerate}
+\item Transform the atomic spin orbitals $\mbf{V}^{\text{AO}}$ to molecular spin orbitals $\mbf{V}^{\text{MO}}$ using \tbf{C}.
+\item Calculate $\mbf{H}^{\text{MO}} = \mbf{C}^{\dagger}\mbf{H}^{\text{AO}}\mbf{C}$ and $G_{\mu\nu}^{\text{MO}} = P^{\text{MO}}_{ij}(V^{\text{MO}}_{\mu\nu ij} - 0.5*V^{\text{MO}}_{\mu j i \nu})$. 
+\item Check $\mbf{F}^{\text{MO}}$ by calculating $\mbf{F}^{\text{MO}} = \mbf{C}^{\dagger}\mbf{F}^{\text{AO}}\mbf{C}$ and $\mbf{F}^{\text{MO}} = \mbf{H}^{\text{MO}} + \mbf{G}^{\text{MO}}$.
+\item Calculate the second-order perturbation energy $E_0^{(2)} = 2 \sum\limits_{abrs}^{N/2} \dfrac{\inp{ab}{rs} \inp{rs}{ab}}{\varepsilon_a + \varepsilon_b - \varepsilon_r - \varepsilon_s} - \sum\limits_{abrs}^{N/2} \dfrac{\inp{ab}{rs} \inp{rs}{ba}}{\varepsilon_a + \varepsilon_b - \varepsilon_r - \varepsilon_s}$
+\item Calculate the correction to the Hartree-Fock energy $E_0 = E_0^{(0)} + E_0^{(1)}$ by adding the second-order perturbation energy $E_0^{(2)}$. 
+\end{enumerate}
+
 
 
 \section{Execution Plan}
-The execution plan containing the tasks to completed by each member of our group or listed in the table on the following page.\newline \newline
+The execution plan containing the tasks to be completed by each member of our group are listed in the following table.\newline 
+\begin{center}
 \begin{tabular}{p{4cm}|p{7.5cm}}
      \large{\textbf{Group Member} \ldots} & \large{\textbf{Tasks} \ldots} \\ \hline \hline
-     \textbf{Blair} & \ding{212} Rewrite object oriented SCF procedure \newline \ding{212} Implement Cholesky Tensorial Decomposition in MP2 calculation \newline \ding{212} Create tribits project \\  \hline 
-     \textbf{Sahil} & \ding{212} Write unit tests to compare speed of chosen procedures \newline \ding{212} Implement loop unrolling in Hartree-Fock procedure \newline Create tribits project \\ \hline
-     \textbf{Ellen} & \ding{212} Transform integrals in MP2 calculation and evaluate MP2 energy \newline \ding{212} Implement Cholesky Tensorial Decomposition in MP2 calculation \newline \ding{212} Create tribits project  \\ \hline
+     \textbf{Blair} & \ding{212} Rewrite object oriented SCF procedure \newline \ding{212} Implement Cholesky Tensorial Decomposition in MP2 calculation \newline \ding{212} Create TriBITS project \\  \hline 
+     \textbf{Sahil} & \ding{212} Write unit tests to compare speed of chosen procedures \newline \ding{212} Implement loop unrolling in Hartree-Fock procedure \newline \ding{212} Create TriBITS project \\ \hline
+     \textbf{Ellen} & \ding{212} Transform integrals in MP2 calculation and evaluate MP2 energy \newline \ding{212} Implement Cholesky Tensorial Decomposition in MP2 calculation \newline \ding{212} Create TriBITS project  \\ \hline
 
 \end{tabular}
+\end{center}
 
+\bibliography{Proposal}
 
 \end{document}
