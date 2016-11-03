@@ -12,14 +12,15 @@ double Pi;
 const int N={1e5};
 //int nthreads;
 //int tid;
-double Pi_seed[4];
+int threads = 8;
+double Pi_seed[threads];
 
 //#pragma omp parallel private(nthreads,tid)
 #pragma omp parallel for
-for (int i=0; i<4; ++i){
+for (int i=0; i<threads; ++i){
     //tid = omp_get_thread_num();
     Pi_seed[i]=findPi(N);
-    //cout << "Pi at processor " << i << " is: " <<Pi_seed[i] << endl;
+    cout << "Pi at processor " << i << " is: " <<Pi_seed[i] << endl;
   /* Only master thread does this */
    // if (tid == 0) 
     //{
@@ -29,15 +30,15 @@ for (int i=0; i<4; ++i){
     //}
 
     }
-for (int i=0; i<4; ++i){
+for (int i=0; i<threads; ++i){
 cout << "Pi at processor " << i << " is: " << Pi_seed[i] << endl;
 }
 double sum_pi=0;
-for (int i=0; i<4; ++i){
+for (int i=0; i<threads; ++i){
     sum_pi = sum_pi + Pi_seed[i];
 }
 
-cout << "The final value of pi is " << sum_pi /4.0 << endl;
+cout << "The final value of pi is " << sum_pi /threads << endl;
 
 
 }
