@@ -3,12 +3,16 @@
 #include <iomanip>
 #include <cstdio>
 #include "hf_aux.h"
-
+#include <vector>
+#include <cmath>
+#include <cstdlib>
+using namespace std;
 //////Here are the functions required for HF
 
-double read_nuc_en(double nuc_en)
-{
+typedef std::vector<vector<double>> Real_Matrix;
 
+void read_nuc_en(double nuc_en)
+{
    std::ifstream nuc_ener("enuc.dat");
    while(!nuc_ener.eof()){
       nuc_ener >> nuc_en;
@@ -16,14 +20,15 @@ double read_nuc_en(double nuc_en)
 
 //   std::cout << "Nuclear energy is: " << nuc_en << std::endl;
 
-   return nuc_en;
+   return;
 
 }
 
 
-double read_T(int ao){
-
-   double T_int[ao-1][ao-1];
+void read_T(int ao, Real_Matrix& T_int){
+   
+  //Real_Matrix T_int(ao-1,vector<double>(ao-1,0.0));
+   //double T_int[ao-1][ao-1];
    double val;
    int i;
    int j;
@@ -37,15 +42,14 @@ double read_T(int ao){
       T_int[i-1][j-1] = val;
       std::cout << i << " " << j << " " << T_int[i-1][j-1] << std::endl;
       std::cout << typeid(T_int[ao-1][ao-1]) << std::endl;
-      return T_int[ao-1][ao-1];
    }
-
-
+   return;
 }
 
-double read_S(int ao){
+void read_S(int ao, Real_Matrix& S){
 
-   double S[ao-1][ao-1];
+   Real_Matrix S(ao-1,vector<double>(ao-1,0.0));
+   //double S[ao-1][ao-1];
    double val;
    int i;
    int j;
@@ -59,14 +63,13 @@ double read_S(int ao){
       S[i-1][j-1] = val;
       std::cout << i << " " << j << " " << S[i-1][j-1] << std::endl;
    }
-   return S[ao-1][ao-1];
-
-
+   return;
 }
 
-double read_v_int(int ao){
+void read_v_int(int ao, Real_Matrix& v_int){
 
-   double v_int[ao-1][ao-1];
+   Real_Matrix v_int(ao-1,vector<double>(ao-1,0.0));
+   //double v_int[ao-1][ao-1];
    double val;
    int i;
    int j;
@@ -81,6 +84,6 @@ double read_v_int(int ao){
       v_int[i-1][j-1] = val;
       std::cout << i << " " << j << " " << v_int[i-1][j-1] << std::endl;
    }
-   return v_int[ao-1][ao-1];
+   return;
 
 }
