@@ -1,9 +1,11 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
-#include <cstdio>
+//#include <cstdio>
+#include <iomanip>
+#include <cstdlib>
 #include <vector>
-#include "hf_aux.h"
+#include "hf_aux.cpp"
 
 using namespace std;
 
