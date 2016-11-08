@@ -6,9 +6,16 @@
 #include <cstdlib>
 #include <cmath>
 #include <vector>
+//#include <lapacke.h>
+#include <mkl.h>
 #include "hf_aux.cpp"
 
 using namespace std;
+
+/* DSYEV prototype */
+extern void dsyev( char* jobz, char* uplo, int* n, double* a, int* lda,
+                double* w, double* work, int* lwork, int* info );
+
 
 typedef std::vector<vector<double> > Real_Matrix;
 typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
@@ -56,6 +63,10 @@ int main(int argc, char* argv[])
    Real_4dMatrix v_int(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
    read_v_int(ao, v_int);
    cout << "The energy is: " << hf_energy << endl;
+
+//Build orthogonalization matrix, S^{-1/2}
+
+
 
    return 0;
 }

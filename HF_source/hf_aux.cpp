@@ -6,6 +6,7 @@
 #include <vector>
 #include <cmath>
 #include <cstdlib>
+#include <mkl.h>
 #include <iomanip>
 //////Here are the functions required for HF
 
