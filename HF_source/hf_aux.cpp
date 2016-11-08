@@ -162,7 +162,7 @@ void calculate_S12(int ao, Matrix& S, Matrix& S12){
    for (int i=0; i < ao ; i++){
       //for (int j=0; j < ao ; j++){
           std::cout << evals(i) << std::endl;
-          //S12(i,j)=sqrt(evals(i,j));
+          S12(i,i)=1/sqrt(evals(i));
       //}
    }
    std::cout << "Square root of eigenvalues are: " << S12 << std::endl;
