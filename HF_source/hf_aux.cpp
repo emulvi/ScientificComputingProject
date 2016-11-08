@@ -7,10 +7,11 @@
 #include <cmath>
 #include <cstdlib>
 #include <iomanip>
-using namespace std;
 //////Here are the functions required for HF
 
-typedef std::vector<vector<double>> Real_Matrix;
+
+typedef std::vector<vector<double> > Real_Matrix;
+typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 
 void read_nuc_en(double nuc_en)
 {
@@ -19,72 +20,130 @@ void read_nuc_en(double nuc_en)
       nuc_ener >> nuc_en;
    }
 
-//   std::cout << "Nuclear energy is: " << nuc_en << std::endl;
 
    return;
 
 }
 
 
-void read_T(int ao, Real_Matrix T_int){
+void read_T(int ao, Real_Matrix& T_int){
    
-  //Real_Matrix T_int(ao-1,vector<double>(ao-1,0.0));
-   //double T_int[ao-1][ao-1];
    double val;
    int i;
    int j;
 
    std::ifstream kin_en;
    kin_en.open("T.dat");
-   for(int k=0;k<(ao*(ao+1))/2;k++){
+   for(int k=0;k<((ao)*(ao+1))/2;k++){
       kin_en >> i;
       kin_en >> j;
       kin_en >> val;
       T_int[i-1][j-1] = val;
+      T_int[j-1][i-1] = T_int[i-1][j-1];
       std::cout << i << " " << j << " " << T_int[i-1][j-1] << std::endl;
-      //std::cout << typeid(T_int[ao-1][ao-1]) << std::endl;
    }
    return;
 }
 
-void read_S(int ao, Real_Matrix S){
+void read_S(int ao, Real_Matrix& S){
 
-  //Real_Matrix S(ao-1,vector<double>(ao-1,0.0));
-   //double S[ao-1][ao-1];
    double val;
    int i;
    int j;
 
    std::ifstream overlap;
    overlap.open("overlap.dat");
-   for(int k=0;k<(ao*(ao+1))/2;k++){
+   for(int k=0;k<((ao)*(ao+1))/2;k++){
       overlap >> i;
       overlap >> j;
       overlap >> val;
       S[i-1][j-1] = val;
+      S[j-1][i-1] = S[i-1][j-1];
       std::cout << i << " " << j << " " << S[i-1][j-1] << std::endl;
    }
    return;
 }
 
-void read_v_int(int ao, Real_Matrix v_int){
+void read_v_nuc(int ao, Real_Matrix& v_nuc){
 
-  //Real_Matrix v_int(ao-1,vector<double>(ao-1,0.0));
-   //double v_int[ao-1][ao-1];
    double val;
    int i;
    int j;
 
 
    std::ifstream interaction;
-   interaction.open("v_int.dat");
-   for(int k=0;k<(ao*(ao+1))/2;k++){
+   interaction.open("v_nuc.dat");
+   for(int k=0;k<((ao)*(ao+1))/2;k++){
       interaction >> i;
       interaction >> j;
       interaction >> val;
-      v_int[i-1][j-1] = val;
-      std::cout << i << " " << j << " " << v_int[i-1][j-1] << std::endl;
+      v_nuc[i-1][j-1] = val;
+      v_nuc[j-1][i-1] = v_nuc[i-1][j-1];
+      std::cout << i << " " << j << " " << v_nuc[i-1][j-1] << std::endl;
    }
    return;
 
+}
+
+
+void build_H_core(int ao, Real_Matrix& v_nuc, Real_Matrix& T_int, Real_Matrix& H_core){
+
+   int i;
+   int j;
+
+
+   for(int i=0; i < ao ; i++){
+      for(int j=0; j < ao ; j++){
+         H_core[j][i] = T_int[j][i] + v_nuc[j][i];
+         std::cout << i+1 << " " << j+1 << " " << H_core[j][i] << std::endl;
+         //std::cout << T_int[j][i] << "+" << v_nuc[j][i] << "=" << H_core[j][i] << std::endl;
+      }
+   }
+   return;
+
+}
+
+void read_v_int(int ao, Real_4dMatrix& v_int){
+
+   double val;
+   int i;
+   int j;
+   int k;
+   int l;
+   int z;
+  
+
+   std::ifstream interaction;
+   interaction.open("v_int.dat");
+   while(!interaction.eof()){      
+      interaction >> i;
+      interaction >> j;
+      interaction >> k;
+      interaction >> l;
+      interaction >> val;
+      v_int[i-1][j-1][k-1][l-1] = val;
+      std::cout << i << " " << j << " " << k << " " << l << " " << v_int[i-1][j-1][k-1][l-1] << std::endl;
+   }
+
+   for (int mu=0; mu<ao;mu++){
+      for (int nu=0; nu<mu+1;nu++){
+          for (int lam=0; lam<ao;lam++){
+             for(int sig=0; sig<lam+1;sig++){
+                        v_int[nu][mu][lam][sig]=v_int[mu][nu][lam][sig];
+                        v_int[mu][nu][sig][lam]=v_int[mu][nu][lam][sig];
+                        v_int[nu][mu][sig][lam]=v_int[mu][nu][lam][sig];
+                        v_int[nu][mu][lam][sig]=v_int[mu][nu][lam][sig];
+                        v_int[lam][sig][mu][nu]=v_int[mu][nu][lam][sig];
+                        v_int[sig][lam][mu][nu]=v_int[mu][nu][lam][sig];
+                        v_int[lam][sig][nu][mu]=v_int[mu][nu][lam][sig];
+                        v_int[sig][lam][nu][mu]=v_int[mu][nu][lam][sig];
+       
+
+
+             }
+         }
+      }
+   }
+
+   return;
 }
