@@ -20,6 +20,7 @@ extern void dsyev( char* jobz, char* uplo, int* n, double* a, int* lda,
                 double* w, double* work, int* lwork, int* info );
 
 
+typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
 typedef std::vector<vector<double> > Real_Matrix;
 typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 
@@ -41,35 +42,39 @@ int main(int argc, char* argv[])
 
 //read in kinetic energy terms
    cout << "Reading in Kinetic Energy Matrix" << endl;
-   Real_Matrix T_int(ao,vector<double>(ao,0.0));
+   Matrix T_int(ao,ao);
+   //Real_Matrix T_int(ao,vector<double>(ao,0.0));
    read_T(ao, T_int);
 
 
 //read in overlap matrix
    cout << "Reading in Overlap Matrix" << endl;
-   Real_Matrix S(ao,vector<double>(ao,0.0));
+   Matrix S(ao,ao);
    read_S(ao,S);
  
 //read in v_nuc
    cout << "Reading in Interaction Matrix Matrix" << endl;
-   Real_Matrix v_nuc(ao,vector<double>(ao,0.0));
+   Matrix v_nuc(ao,ao);
    read_v_nuc(ao,v_nuc);
 
 
 //Build H_core = T_int + v_nuc
    cout << "Building H_core" << endl;
-   Real_Matrix H_core(ao,vector<double>(ao,0.0));
+   Matrix H_core(ao,ao);
    build_H_core(ao, v_nuc, T_int, H_core);
 
 //Read v_int
    cout << "Reading in interaction matrix" << endl;
    Real_4dMatrix v_int(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
    read_v_int(ao, v_int);
+
+//calculate orthogonalization matrix, S^{-1/2}
+   cout << "Calculating S^{-1/2}" << endl;
+   Matrix S12(ao,ao);
+   calculate_S12(ao, S, S12);
+
+
    cout << "The energy is: " << hf_energy << endl;
-
-//Build orthogonalization matrix, S^{-1/2}
-
-
 
    return 0;
 }
