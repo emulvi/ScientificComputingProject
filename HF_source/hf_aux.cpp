@@ -166,5 +166,12 @@ void calculate_S12(int ao, Matrix& S, Matrix& S12){
       //}
    }
    std::cout << "Square root of eigenvalues are: " << S12 << std::endl;
+   
+   Matrix evecs_trans = evecs.transpose();
+   Matrix Temp = S12*evecs_trans;
+   Matrix Xmat = evecs*Temp;
+
+   std::cout << "Xmat is: " << Xmat << endl;
+
 
 };
