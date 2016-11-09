@@ -85,6 +85,7 @@ int main(int argc, char* argv[])
    Matrix P0 = Matrix::Zero(ao,ao);
    build_P(ao, occ, C_ao, P0);
 
+
 //initial SCF electronic energy
 
    cout << "calculating the initial SCF energy: " << endl;
@@ -95,6 +96,9 @@ int main(int argc, char* argv[])
    cout << "Total Energy is ...." << endl;
    cout << En_elec << "+" << En_nuc << "=" << En_total << endl;
 
+////////////Begin SCF Procedure
+   double deltaE = 0;
+   while (deltaE < 0.001) {
 
 //Build new Fock matrix, call it G
    cout << "Building new Fock matrix, G" << endl;
@@ -108,14 +112,23 @@ int main(int argc, char* argv[])
    build_P(ao, occ, C_ao, P);
 
 //Compute new SCF Energy
-   En_elec =calculate_En_elec(ao, P, H_core, Fock_new);
-   En_total = En_elec + En_nuc;
+   double En_elec_new =calculate_En_elec(ao, P, H_core, Fock_new);
+   En_total = En_elec_new + En_nuc;
 
    cout << "Total Energy is ...." << endl;
-   cout << En_elec << "+" << En_nuc << "=" << En_total << endl;
+   cout << En_elec_new << "+" << En_nuc << "=" << En_total << endl;
 
 
    cout << "The energy is: " << hf_energy << endl;
+   deltaE = En_elec_new-En_elec;
+   En_elec=En_elec_new;
+   P0=P;
+
+   cout << "deltaE is: " << deltaE << endl;
+
+   exit(0);
+
+   }
 
    return 0;
 }
