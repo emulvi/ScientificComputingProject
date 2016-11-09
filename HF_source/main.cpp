@@ -30,37 +30,37 @@ int main(int argc, char* argv[])
 //Assuming restricted hartree fock, read in arguments from commandline
 
    int ao = atoi(argv[1]);
+   int occ = atoi(argv[2]);
    cout <<"Number of orbitals/el: " << ao << endl;
 
 //Initializing energy
    double hf_energy=0;
 
 //read in nuclear energy term
-   double nuclear_en;
-   read_nuc_en(nuclear_en);
-   std::cout << "Nuclear energy is: " << nuclear_en << std::endl;
+   double En_nuc = read_nuc_en();
+   std::cout << "Nuclear energy is: " << En_nuc << std::endl;
 
 //read in kinetic energy terms
    cout << "Reading in Kinetic Energy Matrix" << endl;
-   Matrix T_int(ao,ao);
+   Matrix T_int = Matrix::Zero(ao,ao);
    //Real_Matrix T_int(ao,vector<double>(ao,0.0));
    read_T(ao, T_int);
 
 
 //read in overlap matrix
    cout << "Reading in Overlap Matrix" << endl;
-   Matrix S(ao,ao);
+   Matrix S = Matrix::Zero(ao,ao);
    read_S(ao,S);
  
 //read in v_nuc
    cout << "Reading in Interaction Matrix Matrix" << endl;
-   Matrix v_nuc(ao,ao);
+   Matrix v_nuc  = Matrix::Zero(ao,ao);
    read_v_nuc(ao,v_nuc);
 
 
 //Build H_core = T_int + v_nuc
    cout << "Building H_core" << endl;
-   Matrix H_core(ao,ao);
+   Matrix H_core = Matrix::Zero(ao,ao);
    build_H_core(ao, v_nuc, T_int, H_core);
 
 //Read v_int
@@ -70,20 +70,30 @@ int main(int argc, char* argv[])
 
 //calculate orthogonalization matrix, S^{-1/2}
    cout << "Calculating S^{-1/2}" << endl;
-   Matrix S12(ao,ao);
-   Matrix Xmat(ao,ao);
+   Matrix S12 = Matrix::Zero(ao,ao);
+   Matrix Xmat = Matrix::Zero(ao,ao);
    calculate_S12(ao, S, S12, Xmat);
 
 //Diagonalize Fock
    cout << "Diagonalizing Fock" << endl;
-   Matrix Fock(ao,ao);
-   Matrix C_ao(ao,ao);
+   Matrix Fock = Matrix::Zero(ao,ao);
+   Matrix C_ao = Matrix::Zero(ao,ao);
    diagonalize_Fock(ao, H_core, Xmat, Fock, C_ao);
 
 //Build density matrix
    cout << "Building initial guess for Density Matrix" << endl;
-   Matrix P0(ao,ao);
-   build_P(ao, C_ao, P0);
+   Matrix P0 = Matrix::Zero(ao,ao);
+   build_P(ao, occ, C_ao, P0);
+
+//initial SCF electronic energy
+
+   cout << "calculating the initial SCF energy: " << endl;
+
+   double En_elec =calculate_En_elec(ao, P0, H_core, Fock);
+   double En_total = En_elec + En_nuc;
+
+   cout << "Total Energy is ...." << endl;
+   cout << En_elec << "+" << En_nuc << "=" << En_total << endl;
 
    cout << "The energy is: " << hf_energy << endl;
 

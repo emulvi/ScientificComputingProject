@@ -15,15 +15,16 @@ typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> M
 typedef std::vector<vector<double> > Real_Matrix;
 typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 
-void read_nuc_en(double nuc_en)
+double read_nuc_en()
 {
+   double nuc_en;
    std::ifstream nuc_ener("enuc.dat");
    while(!nuc_ener.eof()){
       nuc_ener >> nuc_en;
    }
+   cout << "in read_nuc routine en = " << nuc_en << endl;
 
-
-   return;
+   return nuc_en;
 
 }
 
@@ -42,7 +43,7 @@ void read_T(int ao, Matrix& T_int){
       kin_en >> val;
       T_int(i-1,j-1) = val;
       T_int(j-1,i-1) = T_int(i-1,j-1);
-      std::cout << i << " " << j << " " << T_int(i-1,j-1) << std::endl;
+      //std::cout << i << " " << j << " " << T_int(i-1,j-1) << std::endl;
    }
    return;
 }
@@ -61,7 +62,7 @@ void read_S(int ao, Matrix& S){
       overlap >> val;
       S(i-1,j-1) = val;
       S(j-1,i-1) = S(i-1,j-1);
-      std::cout << i << " " << j << " " << S(i-1,j-1) << std::endl;
+      //std::cout << i << " " << j << " " << S(i-1,j-1) << std::endl;
    }
    return;
 }
@@ -81,7 +82,7 @@ void read_v_nuc(int ao, Matrix& v_nuc){
       interaction >> val;
       v_nuc(i-1,j-1) = val;
       v_nuc(j-1,i-1) = v_nuc(i-1,j-1);
-      std::cout << i << " " << j << " " << v_nuc(i-1,j-1) << std::endl;
+      //std::cout << i << " " << j << " " << v_nuc(i-1,j-1) << std::endl;
    }
    return;
 
@@ -97,7 +98,7 @@ void build_H_core(int ao, Matrix& v_nuc, Matrix& T_int, Matrix& H_core){
    for(int i=0; i < ao ; i++){
       for(int j=0; j < ao ; j++){
          H_core(j,i) = T_int(j,i) + v_nuc(j,i);
-         std::cout << i+1 << " " << j+1 << " " << H_core(j,i) << std::endl;
+         //std::cout << i+1 << " " << j+1 << " " << H_core(j,i) << std::endl;
          //std::cout << T_int[j][i] << "+" << v_nuc[j][i] << "=" << H_core[j][i] << std::endl;
       }
    }
@@ -124,7 +125,7 @@ void read_v_int(int ao, Real_4dMatrix& v_int){
       interaction >> l;
       interaction >> val;
       v_int[i-1][j-1][k-1][l-1] = val;
-      std::cout << i << " " << j << " " << k << " " << l << " " << v_int[i-1][j-1][k-1][l-1] << std::endl;
+      //std::cout << i << " " << j << " " << k << " " << l << " " << v_int[i-1][j-1][k-1][l-1] << std::endl;
    }
 
    for (int mu=0; mu<ao;mu++){
@@ -156,8 +157,8 @@ void calculate_S12(int ao, Matrix& S, Matrix& S12, Matrix& Xmat){
    Matrix evecs = solver.eigenvectors();
    Matrix evals = solver.eigenvalues();
 
-   std::cout << "eigenvectors are: " << evecs << std::endl;
-   std::cout << "eigenvalues are: " << evals << std::endl;
+   //std::cout << "eigenvectors are: " << evecs << std::endl;
+   //std::cout << "eigenvalues are: " << evals << std::endl;
 
    for (int i=0; i < ao ; i++){
       //for (int j=0; j < ao ; j++){
@@ -165,13 +166,12 @@ void calculate_S12(int ao, Matrix& S, Matrix& S12, Matrix& Xmat){
           S12(i,i)=1/sqrt(evals(i));
       //}
    }
-   std::cout << "Square root of eigenvalues are: " << S12 << std::endl;
+   //std::cout << "Square root of eigenvalues are: " << S12 << std::endl;
    
-   Matrix evecs_trans = evecs.transpose();
-   Matrix Temp = S12*evecs_trans;
-   Xmat = evecs*Temp;
+   //Matrix evecs_trans = evecs.transpose();
+   Xmat = evecs*S12*evecs.transpose();
 
-   std::cout << "Xmat is: " << Xmat << endl;
+   //std::cout << "Xmat is: " << Xmat << endl;
 
 
    return;
@@ -188,7 +188,7 @@ void diagonalize_Fock(int ao, Matrix& H_core, Matrix& Xmat, Matrix& Fock, Matrix
 
    C_ao=Xmat*evecs;
 
-   cout << "C_ao in AO basis is: " << C_ao << endl;
+   //cout << "C_ao in AO basis is: " << C_ao << endl;
 
 
    return;
@@ -196,13 +196,13 @@ void diagonalize_Fock(int ao, Matrix& H_core, Matrix& Xmat, Matrix& Fock, Matrix
 };
 
 
-void build_P(int ao, Matrix& C_ao, Matrix &P0){
+void build_P(int ao, int occ, Matrix& C_ao, Matrix &P0){
 
   for (int i=0; i<ao; i++) {
       for (int j=0; j<ao; j++) {
-         for (int k=0; k<ao/2; k++) {
+         for (int k=0; k<occ; k++) {
        
-            P0(i,j) = P0(i,j) + C_ao(i,k)*C_ao(j,k);
+            P0(i,j) = P0(i,j) + C_ao(i,k)*(C_ao(j,k));
          
          }
       }
@@ -212,4 +212,15 @@ void build_P(int ao, Matrix& C_ao, Matrix &P0){
    return;
 };
 
+double calculate_En_elec(int ao, Matrix& P0, Matrix& H_core, Matrix& Fock){
+  double En = 0.0;
+  for (int i=0; i<ao; i++) {
+      for (int j=0; j<ao; j++) {
+      
+          En = En + P0(j,i)*(H_core(i,j)+Fock(i,j));
+      }
+   }
 
+   cout << "En_elec in loop is: " << En << endl;
+   return En;
+};

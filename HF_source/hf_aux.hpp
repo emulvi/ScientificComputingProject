@@ -14,7 +14,7 @@ typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> M
 typedef std::vector<vector<double> > Real_Matrix;
 typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 
-void read_nuc_en(double nuc_en);
+double read_nuc_en();
 
 void read_T(int ao, Matrix& T_int);
 
@@ -30,6 +30,8 @@ void calculate_S12(int ao, Matrix& S, Matrix& S12, Matrix& Xmat);
 
 void diagonalize_Fock(int ao, Matrix& H_core, Matrix& Xmat, Matrix& Fock, Matrix& C_ao);
 
-void build_P(int ao, Matrix& C_ao, Matrix &P0);
+void build_P(int ao, int occ, Matrix& C_ao, Matrix &P0);
+
+double calculate_En_elec(int ao, Matrix& P0, Matrix& H_core, Matrix& Fock);
 
 #endif
