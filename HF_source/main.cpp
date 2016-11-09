@@ -71,7 +71,14 @@ int main(int argc, char* argv[])
 //calculate orthogonalization matrix, S^{-1/2}
    cout << "Calculating S^{-1/2}" << endl;
    Matrix S12(ao,ao);
-   calculate_S12(ao, S, S12);
+   Matrix Xmat(ao,ao);
+   calculate_S12(ao, S, S12, Xmat);
+
+//Diagonalize Fock
+   cout << "Diagonalizing Fock" << endl;
+   Matrix Fock(ao,ao);
+   Matrix C_ao(ao,ao);
+   diagonalize_Fock(ao, H_core, Xmat, Fock, C_ao);
 
 
    cout << "The energy is: " << hf_energy << endl;

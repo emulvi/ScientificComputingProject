@@ -26,6 +26,8 @@ void build_H_core(int ao, Matrix& v_nuc, Matrix& T_int, Matrix& H_core);
 
 void read_v_int(int ao, Real_4dMatrix& v_int);
 
-void calculate_S12(int ao, Matrix& S, Matrix& S12);
+void calculate_S12(int ao, Matrix& S, Matrix& S12, Matrix& Xmat);
+
+void diagonalize_Fock(int ao, Matrix& H_core, Matrix& Xmat, Matrix& Fock, Matrix& C_ao);
 
 #endif

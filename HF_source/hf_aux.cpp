@@ -150,7 +150,7 @@ void read_v_int(int ao, Real_4dMatrix& v_int){
    return;
 };
 
-void calculate_S12(int ao, Matrix& S, Matrix& S12){
+void calculate_S12(int ao, Matrix& S, Matrix& S12, Matrix& Xmat){
 
    Eigen::SelfAdjointEigenSolver<Matrix> solver(S);
    Matrix evecs = solver.eigenvectors();
@@ -169,9 +169,27 @@ void calculate_S12(int ao, Matrix& S, Matrix& S12){
    
    Matrix evecs_trans = evecs.transpose();
    Matrix Temp = S12*evecs_trans;
-   Matrix Xmat = evecs*Temp;
+   Xmat = evecs*Temp;
 
    std::cout << "Xmat is: " << Xmat << endl;
 
 
+   return;
 };
+
+
+void diagonalize_Fock(int ao, Matrix& H_core, Matrix& Xmat, Matrix& Fock, Matrix& C_ao){
+
+   Fock=Xmat.transpose()*H_core*Xmat;
+      
+   Eigen::SelfAdjointEigenSolver<Matrix> solver(Fock);
+   Matrix evecs = solver.eigenvectors();
+   Matrix evals = solver.eigenvalues();
+
+
+
+
+   return;
+
+};
+
