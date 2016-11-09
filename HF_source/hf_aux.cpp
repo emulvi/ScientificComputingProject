@@ -210,6 +210,7 @@ double calculate_En_elec(int ao, Matrix& P0, Matrix& H_core, Matrix& Fock){
       for (int j=0; j<ao; j++) {
       
           En = En + P0(j,i)*(H_core(i,j)+Fock(i,j));
+
       }
    }
 
@@ -233,7 +234,7 @@ void build_new_Fock(int ao, Matrix& P0, Real_4dMatrix& v_int, Matrix&H_core, Mat
       }
    }
 
-   //cout << "New fock (G) = " << endl << Fock << endl;
+   cout << "New fock (G) = " << endl << Fock << endl;
 
 }
 

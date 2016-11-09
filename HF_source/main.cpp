@@ -83,14 +83,20 @@ int main(int argc, char* argv[])
 //Build density matrix
    cout << "Building initial guess for Density Matrix" << endl;
    Matrix P0 = Matrix::Zero(ao,ao);
+
+
+//Build new Fock matrix, call it G
+   cout << "Building new Fock matrix, G" << endl;
+   Matrix Fock_new = Matrix::Zero(ao,ao);
+   build_new_Fock(ao, P0, v_int, H_core, Fock_new);
+
+
    build_P(ao, occ, C_ao, P0);
-
-
 //initial SCF electronic energy
 
    cout << "calculating the initial SCF energy: " << endl;
 
-   double En_elec =calculate_En_elec(ao, P0, H_core, Fock);
+   double En_elec =calculate_En_elec(ao, P0, H_core, Fock_new);
    double En_total = En_elec + En_nuc;
 
    cout << "Total Energy is ...." << endl;
@@ -98,10 +104,10 @@ int main(int argc, char* argv[])
 
 
 
-//Build new Fock matrix, call it G
-   cout << "Building new Fock matrix, G" << endl;
-   Matrix Fock_new = Matrix::Zero(ao,ao);
-   build_new_Fock(ao, P0, v_int, H_core, Fock_new);
+////Build new Fock matrix, call it G
+//   cout << "Building new Fock matrix, G" << endl;
+//   Matrix Fock_new = Matrix::Zero(ao,ao);
+//   build_new_Fock(ao, P0, v_int, H_core, Fock_new);
 
 //Build new Density Matrix
    cout << "Building new Density matrix, Pnew" << endl;
