@@ -95,7 +95,17 @@ int main(int argc, char* argv[])
    cout << "Total Energy is ...." << endl;
    cout << En_elec << "+" << En_nuc << "=" << En_total << endl;
 
+
+//Build new Fock matrix, call it G
+   cout << "Building new Fock matrix, G" << endl;
+   build_new_Fock(ao, P0, v_int, H_core, Fock);
+
+
+
    cout << "The energy is: " << hf_energy << endl;
 
    return 0;
 }
+
+
+

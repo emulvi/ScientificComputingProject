@@ -34,4 +34,6 @@ void build_P(int ao, int occ, Matrix& C_ao, Matrix &P0);
 
 double calculate_En_elec(int ao, Matrix& P0, Matrix& H_core, Matrix& Fock);
 
+void build_new_Fock(int ao, Matrix& P0, Real_4dMatrix& v_int, Matrix&H_core, Matrix&Fock);
+
 #endif
