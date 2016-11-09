@@ -96,9 +96,28 @@ int main(int argc, char* argv[])
    cout << "Total Energy is ...." << endl;
    cout << En_elec << "+" << En_nuc << "=" << En_total << endl;
 
+
+
+  //Build new Fock matrix, call it G
+     cout << "Building new Fock matrix, G" << endl;
+     Matrix Fock_new = Matrix::Zero(ao,ao);
+     build_new_Fock(ao, P0, v_int, H_core, Fock_new);
+  
+  //Build new Density Matrix
+     cout << "Building new Density matrix, Pnew" << endl;
+     Matrix P = Matrix::Zero(ao,ao);
+     Matrix C_ao_new = Matrix::Zero(ao,ao);
+     diagonalize_Fock(ao, H_core, Xmat, Fock_new, C_ao_new);
+     build_P(ao, occ, C_ao_new, P);
+  
+     double En_elec_new =calculate_En_elec(ao, P, H_core, Fock_new);
+
 ////////////Begin SCF Procedure
    double deltaE = 0;
    while (deltaE < 0.001) {
+         
+         En_elec=En_elec_new;
+         P0=P;
 
       //Build new Fock matrix, call it G
          cout << "Building new Fock matrix, G" << endl;
@@ -107,12 +126,13 @@ int main(int argc, char* argv[])
       
       //Build new Density Matrix
          cout << "Building new Density matrix, Pnew" << endl;
-         Matrix P = Matrix::Zero(ao,ao);
-         diagonalize_Fock(ao, H_core, Xmat, Fock_new, C_ao);
-         build_P(ao, occ, C_ao, P);
+         //Matrix P = Matrix::Zero(ao,ao);
+         Matrix C_ao_new = Matrix::Zero(ao,ao);
+         diagonalize_Fock(ao, H_core, Xmat, Fock_new, C_ao_new);
+         build_P(ao, occ, C_ao_new, P);
       
       //Compute new SCF Energy
-         double En_elec_new =calculate_En_elec(ao, P, H_core, Fock_new);
+         En_elec_new =calculate_En_elec(ao, P, H_core, Fock_new);
          En_total = En_elec_new + En_nuc;
       
          cout << "Total Energy is ...." << endl;
@@ -121,8 +141,6 @@ int main(int argc, char* argv[])
       
          cout << "The energy is: " << hf_energy << endl;
          deltaE = En_elec_new-En_elec;
-         En_elec=En_elec_new;
-         P0=P;
       
          cout << "deltaE is: " << deltaE << endl;
       
