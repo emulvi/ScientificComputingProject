@@ -28,12 +28,14 @@ void read_v_int(int ao, Real_4dMatrix& v_int);
 
 void calculate_S12(int ao, Matrix& S, Matrix& S12, Matrix& Xmat);
 
-void diagonalize_Fock(int ao, Matrix& H_core, Matrix& Xmat, Matrix& Fock, Matrix& C_ao);
+void diagonalize_Fock(int ao, Matrix& H_core, Matrix& Xmat, Matrix& C_ao);
 
 void build_P(int ao, int occ, Matrix& C_ao, Matrix &P0);
 
 double calculate_En_elec(int ao, Matrix& P0, Matrix& H_core, Matrix& Fock);
 
 void build_new_Fock(int ao, Matrix& P0, Real_4dMatrix& v_int, Matrix&H_core, Matrix&Fock);
+
+
 
 #endif

@@ -123,15 +123,16 @@ void read_v_int(int ao, Real_4dMatrix& v_int){
       for (int nu=0; nu<mu+1;nu++){
           for (int lam=0; lam<ao;lam++){
              for(int sig=0; sig<lam+1;sig++){
+                   if (mu*nu>=lam*sig){
                         v_int[nu][mu][lam][sig]=v_int[mu][nu][lam][sig];
                         v_int[mu][nu][sig][lam]=v_int[mu][nu][lam][sig];
                         v_int[nu][mu][sig][lam]=v_int[mu][nu][lam][sig];
-                        v_int[nu][mu][lam][sig]=v_int[mu][nu][lam][sig];
+                        //v_int[nu][mu][lam][sig]=v_int[mu][nu][lam][sig];
                         v_int[lam][sig][mu][nu]=v_int[mu][nu][lam][sig];
                         v_int[sig][lam][mu][nu]=v_int[mu][nu][lam][sig];
                         v_int[lam][sig][nu][mu]=v_int[mu][nu][lam][sig];
                         v_int[sig][lam][nu][mu]=v_int[mu][nu][lam][sig];
-       
+                    }
 
 
              }
@@ -170,8 +171,9 @@ void calculate_S12(int ao, Matrix& S, Matrix& S12, Matrix& Xmat){
 };
 
 
-void diagonalize_Fock(int ao, Matrix& H_core, Matrix& Xmat, Matrix& Fock, Matrix& C_ao){
+void diagonalize_Fock(int ao, Matrix& H_core, Matrix& Xmat, Matrix& C_ao){
 
+   Matrix Fock = Matrix::Zero(ao,ao);
    Fock=Xmat.transpose()*H_core*Xmat;
       
    Eigen::SelfAdjointEigenSolver<Matrix> solver(Fock);
@@ -186,6 +188,7 @@ void diagonalize_Fock(int ao, Matrix& H_core, Matrix& Xmat, Matrix& Fock, Matrix
    return;
 
 };
+
 
 
 void build_P(int ao, int occ, Matrix& C_ao, Matrix &P0){
@@ -227,7 +230,7 @@ void build_new_Fock(int ao, Matrix& P0, Real_4dMatrix& v_int, Matrix&H_core, Mat
          for (int k=0; k<ao ; k++){
              for (int l=0; l<ao ; l++){
 
-                 Fock(i,j)=Fock(i,j) +  P0(k,l)*(v_int[i][j][k][l]-0.5*v_int[i][l][k][j]);
+                 Fock(i,j)=Fock(i,j) +  P0(k,l)*(2*v_int[i][j][k][l]-v_int[i][k][j][l]);
 
              }
           }
