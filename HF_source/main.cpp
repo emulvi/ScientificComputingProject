@@ -98,19 +98,19 @@ int main(int argc, char* argv[])
 
 
 
-  //Build new Fock matrix, call it G
-     cout << "Building new Fock matrix, G" << endl;
-     Matrix Fock_new = Matrix::Zero(ao,ao);
-     build_new_Fock(ao, P0, v_int, H_core, Fock_new);
-  
-  //Build new Density Matrix
-     cout << "Building new Density matrix, Pnew" << endl;
-     Matrix P = Matrix::Zero(ao,ao);
-     Matrix C_ao_new = Matrix::Zero(ao,ao);
-     diagonalize_Fock(ao, H_core, Xmat, Fock_new, C_ao_new);
-     build_P(ao, occ, C_ao_new, P);
-  
-     double En_elec_new =calculate_En_elec(ao, P, H_core, Fock_new);
+//Build new Fock matrix, call it G
+   cout << "Building new Fock matrix, G" << endl;
+   Matrix Fock_new = Matrix::Zero(ao,ao);
+   build_new_Fock(ao, P0, v_int, H_core, Fock_new);
+
+//Build new Density Matrix
+   cout << "Building new Density matrix, Pnew" << endl;
+   Matrix P = Matrix::Zero(ao,ao);
+   Matrix C_ao_new = Matrix::Zero(ao,ao);
+   diagonalize_Fock(ao, H_core, Xmat, Fock_new, C_ao_new);
+   build_P(ao, occ, C_ao_new, P);
+
+   double En_elec_new =calculate_En_elec(ao, P, H_core, Fock_new);
 
 ////////////Begin SCF Procedure
    double deltaE = 0;

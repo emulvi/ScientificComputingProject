@@ -209,7 +209,7 @@ double calculate_En_elec(int ao, Matrix& P0, Matrix& H_core, Matrix& Fock){
   for (int i=0; i<ao; i++) {
       for (int j=0; j<ao; j++) {
       
-          En = En + P0(i,j)*(H_core(i,j)+Fock(i,j));
+          En = En + P0(j,i)*(H_core(i,j)+Fock(i,j));
       }
    }
 
