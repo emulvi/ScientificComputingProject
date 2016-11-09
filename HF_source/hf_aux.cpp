@@ -11,7 +11,7 @@
 //////Here are the functions required for HF
 
 
-typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
+typedef Eigen::Matrix<long double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
 typedef std::vector<vector<double> > Real_Matrix;
 typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 
@@ -91,19 +91,10 @@ void read_v_nuc(int ao, Matrix& v_nuc){
 
 void build_H_core(int ao, Matrix& v_nuc, Matrix& T_int, Matrix& H_core){
 
-   int i;
-   int j;
+   H_core=T_int+v_nuc;
+   std::cout << H_core << endl;
 
-
-   for(int i=0; i < ao ; i++){
-      for(int j=0; j < ao ; j++){
-         H_core(j,i) = T_int(j,i) + v_nuc(j,i);
-         //std::cout << i+1 << " " << j+1 << " " << H_core(j,i) << std::endl;
-         //std::cout << T_int[j][i] << "+" << v_nuc[j][i] << "=" << H_core[j][i] << std::endl;
-      }
-   }
    return;
-
 }
 
 void read_v_int(int ao, Real_4dMatrix& v_int){
@@ -241,7 +232,7 @@ void build_new_Fock(int ao, Matrix& P0, Real_4dMatrix& v_int, Matrix&H_core, Mat
       }
    }
 
-   cout << "New fock (G) = " << endl << Fock << endl;
+   //cout << "New fock (G) = " << endl << Fock << endl;
 
 }
 

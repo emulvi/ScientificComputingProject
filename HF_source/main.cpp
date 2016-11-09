@@ -20,7 +20,7 @@ extern void dsyev( char* jobz, char* uplo, int* n, double* a, int* lda,
                 double* w, double* work, int* lwork, int* info );
 
 
-typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
+typedef Eigen::Matrix<long double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
 typedef std::vector<vector<double> > Real_Matrix;
 typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 
@@ -98,8 +98,21 @@ int main(int argc, char* argv[])
 
 //Build new Fock matrix, call it G
    cout << "Building new Fock matrix, G" << endl;
-   build_new_Fock(ao, P0, v_int, H_core, Fock);
+   Matrix Fock_new = Matrix::Zero(ao,ao);
+   build_new_Fock(ao, P0, v_int, H_core, Fock_new);
 
+//Build new Density Matrix
+   cout << "Building new Density matrix, Pnew" << endl;
+   Matrix P = Matrix::Zero(ao,ao);
+   diagonalize_Fock(ao, H_core, Xmat, Fock_new, C_ao);
+   build_P(ao, occ, C_ao, P);
+
+//Compute new SCF Energy
+   En_elec =calculate_En_elec(ao, P, H_core, Fock_new);
+   En_total = En_elec + En_nuc;
+
+   cout << "Total Energy is ...." << endl;
+   cout << En_elec << "+" << En_nuc << "=" << En_total << endl;
 
 
    cout << "The energy is: " << hf_energy << endl;
