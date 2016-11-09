@@ -186,10 +186,30 @@ void diagonalize_Fock(int ao, Matrix& H_core, Matrix& Xmat, Matrix& Fock, Matrix
    Matrix evecs = solver.eigenvectors();
    Matrix evals = solver.eigenvalues();
 
+   C_ao=Xmat*evecs;
 
+   cout << "C_ao in AO basis is: " << C_ao << endl;
 
 
    return;
 
 };
+
+
+void build_P(int ao, Matrix& C_ao, Matrix &P0){
+
+  for (int i=0; i<ao; i++) {
+      for (int j=0; j<ao; j++) {
+         for (int k=0; k<ao/2; k++) {
+       
+            P0(i,j) = P0(i,j) + C_ao(i,k)*C_ao(j,k);
+         
+         }
+      }
+   }
+
+   cout << "Initial Density matrix is: " << P0 << endl; 
+   return;
+};
+
 

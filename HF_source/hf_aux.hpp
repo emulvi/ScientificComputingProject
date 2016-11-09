@@ -30,4 +30,6 @@ void calculate_S12(int ao, Matrix& S, Matrix& S12, Matrix& Xmat);
 
 void diagonalize_Fock(int ao, Matrix& H_core, Matrix& Xmat, Matrix& Fock, Matrix& C_ao);
 
+void build_P(int ao, Matrix& C_ao, Matrix &P0);
+
 #endif

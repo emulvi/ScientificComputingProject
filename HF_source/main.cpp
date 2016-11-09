@@ -80,6 +80,10 @@ int main(int argc, char* argv[])
    Matrix C_ao(ao,ao);
    diagonalize_Fock(ao, H_core, Xmat, Fock, C_ao);
 
+//Build density matrix
+   cout << "Building initial guess for Density Matrix" << endl;
+   Matrix P0(ao,ao);
+   build_P(ao, C_ao, P0);
 
    cout << "The energy is: " << hf_energy << endl;
 
