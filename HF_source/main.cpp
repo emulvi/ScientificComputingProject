@@ -11,6 +11,7 @@
 #include "Eigen/Eigenvalues"
 #include "Eigen/Core"
 #include "hf_aux.cpp"
+#include "mp2_aux.cpp"
 
 using namespace std;
 
