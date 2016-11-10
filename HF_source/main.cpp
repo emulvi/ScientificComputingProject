@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
 ////////////Begin SCF Procedure
    double deltaE = 10;
    while (abs(deltaE) > 0.000001) {
-         cout << "Iteration: " << iteration << endl;
+         cout << "--------------------------------------Iteration: " << iteration <<"-------------------------------------"<< endl;
          En_elec=En_elec_new;
 	 cout << "En_elec is: " << En_elec << endl;
          P0=P2;
@@ -158,7 +158,13 @@ int main(int argc, char* argv[])
          deltaE = En_elec_new-En_elec;
 	 P2=P;
          cout << "deltaE is: " << deltaE << endl;
+
    }
+
+
+
+//Begin MP2 here
+   cout << "Beginning MP2" << endl;
 
    return 0;
 }
