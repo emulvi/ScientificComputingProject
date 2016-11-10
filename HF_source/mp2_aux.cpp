@@ -13,15 +13,16 @@ typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> M
 typedef std::vector<vector<double> > Real_Matrix;
 typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 
-void transform_v_int(int ao, Matrix& C, Real_4dMatrix& v_int, Real_4dMatrix& v_int_mo, Matrix& Xmat){
+void transform_v_int(int ao, Matrix& C, Real_4dMatrix& v_int, Real_4dMatrix& v_int_mo, Matrix& Xmat, Matrix& evecs){
 
    int i, j, k, l;
    int a,b,c,d = 0;
  
    //C=C.transpose();
  
-   Matrix Cmo = C*Xmat.transpose();
-   cout << "C matrix is: " << Cmo << endl;
+   //Matrix Cmo = Xmat.transpose()*C;
+   //Matrix Cmo = C.transpose();
+   //cout << "C matrix is: " << Cmo << endl;
  
    for(a=a*b*c*d; a < ao; a++) {
      for(b=0; b <= a; b++) {
@@ -33,7 +34,7 @@ void transform_v_int(int ao, Matrix& C, Real_4dMatrix& v_int, Real_4dMatrix& v_i
                for(k=0; k < ao; k++) {
                  for(l=0; l < ao; l++) {
   
-                   v_int_mo[i][j][k][l] += Cmo(d,l) * Cmo(c,k) * Cmo(b,j) * Cmo(a,i) * v_int[a][b][c][d];
+                   v_int_mo[i][j][k][l] += evecs(d,l) * evecs(c,k) * evecs(b,j) * evecs(a,i) * v_int[a][b][c][d];
                  }
                }
              }

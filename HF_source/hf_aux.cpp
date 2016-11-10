@@ -170,13 +170,13 @@ void calculate_S12(int ao, Matrix& S, Matrix& S12, Matrix& Xmat){
 };
 
 
-void diagonalize_Fock(int ao, Matrix& H_core, Matrix& Xmat, Matrix& C_ao, Matrix& evals){
+void diagonalize_Fock(int ao, Matrix& H_core, Matrix& Xmat, Matrix& C_ao, Matrix& evals, Matrix& evecs){
 
    Matrix Fock = Matrix::Zero(ao,ao);
    Fock=Xmat.transpose()*H_core*Xmat;
       
    Eigen::SelfAdjointEigenSolver<Matrix> solver(Fock);
-   Matrix evecs = solver.eigenvectors();
+   evecs = solver.eigenvectors();
    evals = solver.eigenvalues();
 
    cout << "this is what evals looks like" << evals << endl;

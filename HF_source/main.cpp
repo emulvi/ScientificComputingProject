@@ -79,7 +79,8 @@ int main(int argc, char* argv[])
    Matrix Fock = Matrix::Zero(ao,ao);
    Matrix C_ao = Matrix::Zero(ao,ao);
    Matrix evals = Matrix::Zero(ao,ao);
-   diagonalize_Fock(ao, H_core, Xmat, C_ao, evals);
+   Matrix evecs = Matrix::Zero(ao,ao);
+   diagonalize_Fock(ao, H_core, Xmat, C_ao, evals, evecs);
 
 //Build density matrix
    cout << "Building initial guess for Density Matrix" << endl;
@@ -116,7 +117,7 @@ int main(int argc, char* argv[])
    cout << "Building new Density matrix, Pnew" << endl;
    Matrix P = Matrix::Zero(ao,ao);
    Matrix C_ao_new = Matrix::Zero(ao,ao);
-   diagonalize_Fock(ao, Fock_new, Xmat, C_ao_new, evals);
+   diagonalize_Fock(ao, Fock_new, Xmat, C_ao_new, evals, evecs);
    build_P(ao, occ, C_ao_new, P);
 
    double En_elec_new =calculate_En_elec(ao, P, H_core, Fock_new);
@@ -127,7 +128,7 @@ int main(int argc, char* argv[])
    int iteration = 2;
 ////////////Begin SCF Procedure
    double deltaE = 10;
-   while (abs(deltaE) > 0.00000001) {
+   while (abs(deltaE) > 0.000000000001) {
          cout << "--------------------------------------Iteration: " << iteration <<"-------------------------------------"<< endl;
          En_elec=En_elec_new;
 	 cout << "En_elec is: " << En_elec << endl;
@@ -144,7 +145,7 @@ int main(int argc, char* argv[])
          //Matrix P = Matrix::Zero(ao,ao);
          Matrix C_ao_new = Matrix::Zero(ao,ao);
 	 Matrix P = Matrix::Zero(ao,ao);
-         diagonalize_Fock(ao, Fock_new, Xmat, C_ao_new, evals);
+         diagonalize_Fock(ao, Fock_new, Xmat, C_ao_new, evals, evecs);
          build_P(ao, occ, C_ao_new, P);
 	 //cout << "P after function: \n" << P << endl;
       //Compute new SCF Energy
@@ -171,7 +172,7 @@ int main(int argc, char* argv[])
 //transformation
    cout << "Transforming to MO basis" << endl;
    Real_4dMatrix v_int_mo(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-   transform_v_int(ao, C_ao_new, v_int, v_int_mo, Xmat);
+   transform_v_int(ao, C_ao_new, v_int, v_int_mo, Xmat, evecs);
 
 //calculate MP2 energy
    cout << "------------------------------------Calculating MP2 energy------------------------------------" << endl;
