@@ -118,15 +118,19 @@ int main(int argc, char* argv[])
    build_P(ao, occ, C_ao_new, P);
 
    double En_elec_new =calculate_En_elec(ao, P, H_core, Fock_new);
+   Matrix P2 = Matrix::Zero(ao,ao);
+   P2=P;
 
    cout << "before procedure En_elec new is : " << En_elec_new << endl;
-
+   int iteration = 2;
 ////////////Begin SCF Procedure
-   double deltaE = 0;
-   while (deltaE < 0.001) {
-         
+   double deltaE = 10;
+   while (abs(deltaE) > 0.000001) {
+         cout << "Iteration: " << iteration << endl;
          En_elec=En_elec_new;
-         P0=P;
+	 cout << "En_elec is: " << En_elec << endl;
+         P0=P2;
+	 //cout << "Density matrix: \n" << P0 << endl;
 
       //Build new Fock matrix, call it G
          cout << "Building new Fock matrix, G" << endl;
@@ -137,29 +141,26 @@ int main(int argc, char* argv[])
          cout << "Building new Density matrix, Pnew" << endl;
          //Matrix P = Matrix::Zero(ao,ao);
          Matrix C_ao_new = Matrix::Zero(ao,ao);
+	 Matrix P = Matrix::Zero(ao,ao);
          diagonalize_Fock(ao, Fock_new, Xmat, C_ao_new);
          build_P(ao, occ, C_ao_new, P);
-      
+	 //cout << "P after function: \n" << P << endl;
       //Compute new SCF Energy
          En_elec_new =calculate_En_elec(ao, P, H_core, Fock_new);
          En_total = En_elec_new + En_nuc;
-      
+	 //cout << "P after energy: \n" << P << endl;
          cout << "Total Energy is ...." << endl;
          cout << En_elec_new << "+" << En_nuc << "=" << En_total << endl;
+	 
+	 iteration = iteration + 1;
       
-      
-         cout << "The energy is: " << hf_energy << endl;
+         //cout << "The energy is: " << hf_energy << endl;
          deltaE = En_elec_new-En_elec;
-      
+	 P2=P;
          cout << "deltaE is: " << deltaE << endl;
-      
-         
-         exit(0);
-
    }
 
    return 0;
 }
-
 
 
