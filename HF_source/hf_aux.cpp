@@ -123,7 +123,7 @@ void read_v_int(int ao, Real_4dMatrix& v_int){
       for (int nu=0; nu<mu+1;nu++){
           for (int lam=0; lam<ao;lam++){
              for(int sig=0; sig<lam+1;sig++){
-                   if (mu*nu>=lam*sig){
+                   if (mu*(mu+1)/2 + nu >=lam*(lam+1)/2+sig){
                         v_int[nu][mu][lam][sig]=v_int[mu][nu][lam][sig];
                         v_int[mu][nu][sig][lam]=v_int[mu][nu][lam][sig];
                         v_int[nu][mu][sig][lam]=v_int[mu][nu][lam][sig];
