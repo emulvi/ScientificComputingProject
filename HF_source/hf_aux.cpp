@@ -179,7 +179,8 @@ void diagonalize_Fock(int ao, Matrix& H_core, Matrix& Xmat, Matrix& C_ao, Matrix
    evecs = solver.eigenvectors();
    evals = solver.eigenvalues();
 
-   cout << "this is what evals looks like" << evals << endl;
+   //cout << "this is what evals looks like" << evals << endl;
+   //cout << "this is what evecs looks like" << evecs << endl;
    C_ao=Xmat*evecs;
 
    //cout << "C_ao in AO basis is: " << C_ao << endl;
