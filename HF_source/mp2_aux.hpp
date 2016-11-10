@@ -17,5 +17,8 @@ typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 
 
 
+void transform_v_int(int ao, Matrix& C, Real_4dMatrix& v_int, Real_4dMatrix& v_int_mo);
+
+double calculate_E_mp2(int ao, int occ, Matrix& evals, Real_4dMatrix& v_int_mo);
 
 #endif

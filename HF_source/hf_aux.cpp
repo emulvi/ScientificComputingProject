@@ -10,7 +10,7 @@
 //////Here are the functions required for HF
 
 
-typedef Eigen::Matrix<long double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
+typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
 typedef std::vector<vector<double> > Real_Matrix;
 typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 
@@ -170,15 +170,16 @@ void calculate_S12(int ao, Matrix& S, Matrix& S12, Matrix& Xmat){
 };
 
 
-void diagonalize_Fock(int ao, Matrix& H_core, Matrix& Xmat, Matrix& C_ao){
+void diagonalize_Fock(int ao, Matrix& H_core, Matrix& Xmat, Matrix& C_ao, Matrix& evals){
 
    Matrix Fock = Matrix::Zero(ao,ao);
    Fock=Xmat.transpose()*H_core*Xmat;
       
    Eigen::SelfAdjointEigenSolver<Matrix> solver(Fock);
    Matrix evecs = solver.eigenvectors();
-   Matrix evals = solver.eigenvalues();
+   evals = solver.eigenvalues();
 
+   cout << "this is what evals looks like" << evals << endl;
    C_ao=Xmat*evecs;
 
    //cout << "C_ao in AO basis is: " << C_ao << endl;

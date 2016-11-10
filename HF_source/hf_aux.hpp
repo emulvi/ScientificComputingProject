@@ -9,7 +9,7 @@
 using namespace std;
 //////Here are the functions required for HF
 
-typedef Eigen::Matrix<long double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
+typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
 typedef std::vector<vector<double> > Real_Matrix;
 typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 
@@ -27,7 +27,7 @@ void read_v_int(int ao, Real_4dMatrix& v_int);
 
 void calculate_S12(int ao, Matrix& S, Matrix& S12, Matrix& Xmat);
 
-void diagonalize_Fock(int ao, Matrix& H_core, Matrix& Xmat, Matrix& C_ao);
+void diagonalize_Fock(int ao, Matrix& H_core, Matrix& Xmat, Matrix& C_ao, Matrix& evals);
 
 void build_P(int ao, int occ, Matrix& C_ao, Matrix &P0);
 

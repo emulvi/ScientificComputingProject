@@ -20,7 +20,7 @@ extern void dsyev( char* jobz, char* uplo, int* n, double* a, int* lda,
                 double* w, double* work, int* lwork, int* info );
 
 
-typedef Eigen::Matrix<long double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
+typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
 typedef std::vector<vector<double> > Real_Matrix;
 typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 
@@ -78,7 +78,8 @@ int main(int argc, char* argv[])
    cout << "Diagonalizing Fock" << endl;
    Matrix Fock = Matrix::Zero(ao,ao);
    Matrix C_ao = Matrix::Zero(ao,ao);
-   diagonalize_Fock(ao, H_core, Xmat, C_ao);
+   Matrix evals = Matrix::Zero(ao,ao);
+   diagonalize_Fock(ao, H_core, Xmat, C_ao, evals);
 
 //Build density matrix
    cout << "Building initial guess for Density Matrix" << endl;
@@ -115,7 +116,7 @@ int main(int argc, char* argv[])
    cout << "Building new Density matrix, Pnew" << endl;
    Matrix P = Matrix::Zero(ao,ao);
    Matrix C_ao_new = Matrix::Zero(ao,ao);
-   diagonalize_Fock(ao, Fock_new, Xmat, C_ao_new);
+   diagonalize_Fock(ao, Fock_new, Xmat, C_ao_new, evals);
    build_P(ao, occ, C_ao_new, P);
 
    double En_elec_new =calculate_En_elec(ao, P, H_core, Fock_new);
@@ -126,7 +127,7 @@ int main(int argc, char* argv[])
    int iteration = 2;
 ////////////Begin SCF Procedure
    double deltaE = 10;
-   while (abs(deltaE) > 0.000001) {
+   while (abs(deltaE) > 0.00000001) {
          cout << "--------------------------------------Iteration: " << iteration <<"-------------------------------------"<< endl;
          En_elec=En_elec_new;
 	 cout << "En_elec is: " << En_elec << endl;
@@ -143,7 +144,7 @@ int main(int argc, char* argv[])
          //Matrix P = Matrix::Zero(ao,ao);
          Matrix C_ao_new = Matrix::Zero(ao,ao);
 	 Matrix P = Matrix::Zero(ao,ao);
-         diagonalize_Fock(ao, Fock_new, Xmat, C_ao_new);
+         diagonalize_Fock(ao, Fock_new, Xmat, C_ao_new, evals);
          build_P(ao, occ, C_ao_new, P);
 	 //cout << "P after function: \n" << P << endl;
       //Compute new SCF Energy
@@ -167,6 +168,17 @@ int main(int argc, char* argv[])
 //Begin MP2 here
    cout << "Beginning MP2" << endl;
 
+//transformation
+   cout << "Transforming to MO basis" << endl;
+   Real_4dMatrix v_int_mo(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
+   transform_v_int(ao, C_ao_new, v_int, v_int_mo);
+
+//calculate MP2 energy
+   cout << "--------------------------Calculating MP2 energy--------------------------" << endl;
+////////we want to get Emp2 = -0.049149636120
+   double Emp2 = calculate_E_mp2(ao, occ, evals, v_int_mo);
+
+   cout << "The final energy is: " << En_elec_new + Emp2 + En_nuc <<endl; 
    return 0;
 }
 
