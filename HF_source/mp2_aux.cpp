@@ -21,20 +21,21 @@ void transform_v_int(int ao, Matrix& C, Real_4dMatrix& v_int, Real_4dMatrix& v_i
    //C=C.transpose();
  
    //Matrix Cmo = Xmat.transpose()*C;
-   //Matrix Cmo = C.transpose();
+   Matrix Cmo = evecs.transpose();
    //cout << "C matrix is: " << Cmo << endl;
+   cout << "helllooo? " << endl;
  
-   for(a=a*b*c*d; a < ao; a++) {
-     for(b=0; b <= a; b++) {
-       for(c=0; c <= a; c++) {
-         for(d=0; d <= (a==c ? b : c); d++,a*b*c*d++) {
+   for(a=0; a < ao; a++) {
+     for(b=0; b < ao; b++) {
+       for(c=0; c < ao; c++) {
+         for(d=0; d < ao; d++) {
   
            for(i=0; i < ao; i++) {
              for(j=0; j < ao; j++) {
                for(k=0; k < ao; k++) {
                  for(l=0; l < ao; l++) {
   
-                   v_int_mo[i][j][k][l] += evecs(d,l) * evecs(c,k) * evecs(b,j) * evecs(a,i) * v_int[a][b][c][d];
+                   v_int_mo[a][b][c][d] += Cmo(i,a) * Cmo(j,b) * Cmo(k,c) * Cmo(l,d) * v_int[i][j][k][l];
                  }
                }
              }
