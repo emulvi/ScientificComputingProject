@@ -171,10 +171,10 @@ int main(int argc, char* argv[])
 //transformation
    cout << "Transforming to MO basis" << endl;
    Real_4dMatrix v_int_mo(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-   transform_v_int(ao, C_ao_new, v_int, v_int_mo);
+   transform_v_int(ao, C_ao_new, v_int, v_int_mo, Xmat);
 
 //calculate MP2 energy
-   cout << "--------------------------Calculating MP2 energy--------------------------" << endl;
+   cout << "------------------------------------Calculating MP2 energy------------------------------------" << endl;
 ////////we want to get Emp2 = -0.049149636120
    double Emp2 = calculate_E_mp2(ao, occ, evals, v_int_mo);
 
