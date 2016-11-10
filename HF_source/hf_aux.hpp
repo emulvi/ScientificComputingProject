@@ -5,7 +5,6 @@
 #include <cstdlib> 
 #include <vector>
 #include <cmath>
-#include <mkl.h>
 
 using namespace std;
 //////Here are the functions required for HF

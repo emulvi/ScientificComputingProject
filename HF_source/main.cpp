@@ -7,7 +7,6 @@
 #include <cmath>
 #include <vector>
 //#include <lapacke.h>
-#include <mkl.h>
 #include "Eigen/Dense"
 #include "Eigen/Eigenvalues"
 #include "Eigen/Core"
