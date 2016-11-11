@@ -7,11 +7,11 @@
 #include <cmath>
 #include <vector>
 //#include <lapacke.h>
+//#include <mkl.h>
 #include "Eigen/Dense"
 #include "Eigen/Eigenvalues"
 #include "Eigen/Core"
 #include "hf_aux.cpp"
-#include "mp2_aux.cpp"
 
 using namespace std;
 
@@ -20,7 +20,7 @@ extern void dsyev( char* jobz, char* uplo, int* n, double* a, int* lda,
                 double* w, double* work, int* lwork, int* info );
 
 
-typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
+typedef Eigen::Matrix<long double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
 typedef std::vector<vector<double> > Real_Matrix;
 typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 
@@ -78,16 +78,14 @@ int main(int argc, char* argv[])
    cout << "Diagonalizing Fock" << endl;
    Matrix Fock = Matrix::Zero(ao,ao);
    Matrix C_ao = Matrix::Zero(ao,ao);
-   Matrix evals = Matrix::Zero(ao,ao);
-   Matrix evecs = Matrix::Zero(ao,ao);
-   diagonalize_Fock(ao, H_core, Xmat, C_ao, evals, evecs);
+   diagonalize_Fock(ao, H_core, Xmat, Fock, C_ao);
+   Matrix Fock2 = (Xmat.transpose()).inverse()*Fock*Xmat.inverse();
+
+   //cout << "S^(-1/2)S(-1/2).T" << "\n" << Xmat*Xmat.transpose() << endl; 
+   //cout << "S^(-1/2).T S(-1/2)" << "\n" << Xmat.transpose()*Xmat << endl; 
 
 //Build density matrix
    cout << "Building initial guess for Density Matrix" << endl;
-
-
-//Build new Fock matrix, call it G
-   cout << "Building new Fock matrix, G" << endl;
    Matrix P0 = Matrix::Zero(ao,ao);
    build_P(ao, occ, C_ao, P0);
 
@@ -95,8 +93,6 @@ int main(int argc, char* argv[])
 //initial SCF electronic energy
 
    cout << "calculating the initial SCF energy: " << endl;
-
-   Matrix Fock2 = H_core;
 
    double En_elec =calculate_En_elec(ao, P0, H_core, Fock2);
    double En_total = En_elec + En_nuc;
@@ -106,10 +102,8 @@ int main(int argc, char* argv[])
 
 
 
-////Build new Fock matrix, call it G
-//   cout << "Building new Fock matrix, G" << endl;
-//   Matrix Fock_new = Matrix::Zero(ao,ao);
-//   build_new_Fock(ao, P0, v_int, H_core, Fock_new);
+//Build new Fock matrix, call it G
+   cout << "Building new Fock matrix, G" << endl;
    Matrix Fock_new = Matrix::Zero(ao,ao);
    build_new_Fock(ao, P0, v_int, H_core, Fock_new);
 
@@ -117,24 +111,17 @@ int main(int argc, char* argv[])
    cout << "Building new Density matrix, Pnew" << endl;
    Matrix P = Matrix::Zero(ao,ao);
    Matrix C_ao_new = Matrix::Zero(ao,ao);
-   diagonalize_Fock(ao, Fock_new, Xmat, C_ao_new, evals, evecs);
+   diagonalize_Fock(ao, H_core, Xmat, Fock_new, C_ao_new);
    build_P(ao, occ, C_ao_new, P);
 
    double En_elec_new =calculate_En_elec(ao, P, H_core, Fock_new);
-   Matrix P2 = Matrix::Zero(ao,ao);
-   P2=P;
 
-   cout << "before procedure En_elec new is : " << En_elec_new << endl;
-   int iteration = 2;
 ////////////Begin SCF Procedure
-   double deltaE = 10;
-   Matrix C_mo = Matrix::Zero(ao,ao);
-   while (abs(deltaE) > 0.000000000001) {
-         cout << "--------------------------------------Iteration: " << iteration <<"-------------------------------------"<< endl;
+   double deltaE = 0;
+   while (deltaE < 0.001) {
+         
          En_elec=En_elec_new;
-	 cout << "En_elec is: " << En_elec << endl;
-         P0=P2;
-	 //cout << "Density matrix: \n" << P0 << endl;
+         P0=P;
 
       //Build new Fock matrix, call it G
          cout << "Building new Fock matrix, G" << endl;
@@ -145,43 +132,28 @@ int main(int argc, char* argv[])
          cout << "Building new Density matrix, Pnew" << endl;
          //Matrix P = Matrix::Zero(ao,ao);
          Matrix C_ao_new = Matrix::Zero(ao,ao);
-	 Matrix P = Matrix::Zero(ao,ao);
-         diagonalize_Fock(ao, Fock_new, Xmat, C_ao_new, evals, evecs);
+         diagonalize_Fock(ao, H_core, Xmat, Fock_new, C_ao_new);
          build_P(ao, occ, C_ao_new, P);
-	 //cout << "P after function: \n" << P << endl;
+      
       //Compute new SCF Energy
          En_elec_new =calculate_En_elec(ao, P, H_core, Fock_new);
          En_total = En_elec_new + En_nuc;
-	 //cout << "P after energy: \n" << P << endl;
+      
          cout << "Total Energy is ...." << endl;
          cout << En_elec_new << "+" << En_nuc << "=" << En_total << endl;
-	 
-	 iteration = iteration + 1;
       
-         //cout << "The energy is: " << hf_energy << endl;
+      
+         cout << "The energy is: " << hf_energy << endl;
          deltaE = En_elec_new-En_elec;
-	 P2=P;
+      
          cout << "deltaE is: " << deltaE << endl;
-	 C_mo = C_ao_new;
-	 cout << "C_ao_new at end of while\n" << C_ao_new << endl;
+      
+         exit(0);
+
    }
 
-//Begin MP2 here
-   cout << "C_ao_new at beginning\n" << C_mo << endl;
-   cout << "Beginning MP2" <<  endl;
-
-//transformation
-   cout << "Transforming to MO basis" << endl;
-   Real_4dMatrix v_int_mo(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-   transform_v_int(ao, C_mo, v_int, v_int_mo, Xmat, evecs);
-
-//calculate MP2 energy
-   cout << "------------------------------------Calculating MP2 energy------------------------------------" << endl;
-////////we want to get Emp2 = -0.049149636120
-   double Emp2 = calculate_E_mp2(ao, occ, evals, v_int_mo);
-
-   cout << "The final energy is: " << En_elec_new + Emp2 + En_nuc <<endl; 
    return 0;
 }
+
 
 

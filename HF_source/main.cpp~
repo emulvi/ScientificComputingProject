@@ -128,7 +128,6 @@ int main(int argc, char* argv[])
    int iteration = 2;
 ////////////Begin SCF Procedure
    double deltaE = 10;
-   Matrix C_mo = Matrix::Zero(ao,ao);
    while (abs(deltaE) > 0.000000000001) {
          cout << "--------------------------------------Iteration: " << iteration <<"-------------------------------------"<< endl;
          En_elec=En_elec_new;
@@ -162,18 +161,18 @@ int main(int argc, char* argv[])
          deltaE = En_elec_new-En_elec;
 	 P2=P;
          cout << "deltaE is: " << deltaE << endl;
-	 C_mo = C_ao_new;
-	 cout << "C_ao_new at end of while\n" << C_ao_new << endl;
+
    }
 
+
+
 //Begin MP2 here
-   cout << "C_ao_new at beginning\n" << C_mo << endl;
-   cout << "Beginning MP2" <<  endl;
+   cout << "Beginning MP2" << endl;
 
 //transformation
    cout << "Transforming to MO basis" << endl;
    Real_4dMatrix v_int_mo(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-   transform_v_int(ao, C_mo, v_int, v_int_mo, Xmat, evecs);
+   transform_v_int(ao, C_ao_new, v_int, v_int_mo, Xmat, evecs);
 
 //calculate MP2 energy
    cout << "------------------------------------Calculating MP2 energy------------------------------------" << endl;
