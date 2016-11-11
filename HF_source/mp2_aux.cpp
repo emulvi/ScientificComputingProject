@@ -47,14 +47,60 @@ void transform_v_int(int ao, Matrix& C, Real_4dMatrix& v_int, Real_4dMatrix& v_i
    return;
 };
 
-/*void transform_v_int_2(int ao, Real_4dMatrix& v_int, Real_4dMatrix& v_int_mo2, Matrix& Xmat, Matrix& evecs){
-  int a,b,c,d;
-  
-  for (a=0,a<ao;a++){
-    for (b=0,b<ao;b++){
-      for (c=0,c<ao;c++){	
-	for (c=0,c<ao;c++){
-*/
+void transform_v_int_2(int ao, Real_4dMatrix& v_int, Real_4dMatrix& v_int_mo_2, Matrix& Xmat, Matrix& C_mo){
+  int a,b,c,d,e;
+  Real_4dMatrix v1(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
+  Real_4dMatrix v2(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
+  Real_4dMatrix v3(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
+
+  for (a=0;a<ao;a++){
+    for (b=0;b<ao;b++){
+      for (c=0;c<ao;c++){	
+	for (d=0;d<ao;d++){
+	  for (e=0;e<ao;e++){
+	    v1[a][b][c][d] += v_int[a][b][c][e]*C_mo(e,d);
+	  }
+	}
+      }
+    }
+  }
+  for (a=0;a<ao;a++){
+    for (b=0;b<ao;b++){
+      for (c=0;c<ao;c++){
+	for (d=0;d<ao;d++){
+	  for (e=0;e<ao;e++){
+	    v2[a][b][c][d] += v1[a][b][e][d]*C_mo(e,c);
+	  }
+	}
+      }
+    }
+  }
+  for (a=0;a<ao;a++){
+    for (b=0;b<ao;b++){
+      for (c=0;c<ao;c++){
+	for (d=0;d<ao;d++){
+	  for (e=0;e<ao;e++){
+	    v3[a][b][c][d] += v2[a][e][c][d]*C_mo(e,b);
+	  }
+	}
+      }
+    }
+  }
+  for (a=0;a<ao;a++){
+    for (b=0;b<ao;b++){
+      for (c=0;c<ao;c++){
+	for (d=0;d<ao;d++){
+	  for (e=0;e<ao;e++){
+	    v_int_mo_2[a][b][c][d] += v3[e][b][c][d]*C_mo(e,a);
+	  }
+	}
+      }
+    }
+  }
+
+  return;
+}
+
 
 double calculate_E_mp2(int ao, int occ, Matrix& evals, Real_4dMatrix& v_int_mo){
    double E_mp2 = 0.0;
