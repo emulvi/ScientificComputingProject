@@ -19,13 +19,11 @@ typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 double read_nuc_en(char* Path)
 {
    string ss(Path);
-   cout << ss << endl;
    string name("");
    name=ss +"/enuc.dat";
-   cout << name << endl;
    double nuc_en;
    std::ifstream nuc_ener;
-   nuc_ener.open(name);
+   nuc_ener.open(name.c_str());
    if (!nuc_ener.is_open()) {
      cout << "Error: input file nuc_ener cannot open"<< endl;
    }
@@ -39,14 +37,21 @@ double read_nuc_en(char* Path)
 }
 
 
-void read_T(int ao, Matrix& T_int){
+void read_T(int ao, Matrix& T_int,char* Path){
    
    double val;
    int i;
    int j;
+   
+   string ss(Path);
+   string name("");
+   name=ss +"/T.dat";
 
    std::ifstream kin_en;
-   kin_en.open("T.dat");
+   kin_en.open(name.c_str());
+   if (!kin_en.is_open()) {
+     cout << "Error: input file kin_en cannot open"<< endl;
+   }
    for(int k=0;k<((ao)*(ao+1))/2;k++){
       kin_en >> i;
       kin_en >> j;
@@ -58,14 +63,21 @@ void read_T(int ao, Matrix& T_int){
    return;
 }
 
-void read_S(int ao, Matrix& S){
+void read_S(int ao, Matrix& S,char* Path){
 
    double val;
    int i;
    int j;
 
+   string ss(Path);              
+   string name("");    
+   name=ss +"/overlap.dat";
+
    std::ifstream overlap;
-   overlap.open("overlap.dat");
+   overlap.open(name.c_str());
+   if (!overlap.is_open()) {
+     cout << "Error: input file overlap cannot open"<< endl;
+   }
    for(int k=0;k<((ao)*(ao+1))/2;k++){
       overlap >> i;
       overlap >> j;
@@ -77,15 +89,21 @@ void read_S(int ao, Matrix& S){
    return;
 }
 
-void read_v_nuc(int ao, Matrix& v_nuc){
+void read_v_nuc(int ao, Matrix& v_nuc, char* Path){
 
    double val;
    int i;
    int j;
 
+   string ss(Path);     
+   string name("");  
+   name=ss +"/v_nuc.dat";
 
    std::ifstream interaction;
-   interaction.open("v_nuc.dat");
+   interaction.open(name.c_str());
+   if (!interaction.is_open()) {
+     cout << "Error: input file v_nuc cannot open"<< endl;
+   }
    for(int k=0;k<((ao)*(ao+1))/2;k++){
       interaction >> i;
       interaction >> j;
@@ -107,7 +125,7 @@ void build_H_core(int ao, Matrix& v_nuc, Matrix& T_int, Matrix& H_core){
    return;
 }
 
-void read_v_int(int ao, Real_4dMatrix& v_int){
+void read_v_int(int ao, Real_4dMatrix& v_int, char* Path){
 
    double val;
    int i;
@@ -116,9 +134,15 @@ void read_v_int(int ao, Real_4dMatrix& v_int){
    int l;
    int z;
   
+   string ss(Path);                      
+   string name("");        
+   name=ss +"/v_int.dat";
 
    std::ifstream interaction;
-   interaction.open("v_int.dat");
+   interaction.open(name.c_str());
+   if (!interaction.is_open()) {
+     cout << "Error: input file interaction cannot open"<< endl;
+   }
    while(!interaction.eof()){      
       interaction >> i;
       interaction >> j;

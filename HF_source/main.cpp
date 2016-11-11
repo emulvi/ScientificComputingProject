@@ -64,18 +64,18 @@ int main(int argc, char* argv[])
    cout << "Reading in Kinetic Energy Matrix" << endl;
    Matrix T_int = Matrix::Zero(ao,ao);
    //Real_Matrix T_int(ao,vector<double>(ao,0.0));
-   read_T(ao, T_int);
+   read_T(ao, T_int,Path);
 
 
 //read in overlap matrix
    cout << "Reading in Overlap Matrix" << endl;
    Matrix S = Matrix::Zero(ao,ao);
-   read_S(ao,S);
+   read_S(ao,S,Path);
  
 //read in v_nuc
    cout << "Reading in Interaction Matrix Matrix" << endl;
    Matrix v_nuc  = Matrix::Zero(ao,ao);
-   read_v_nuc(ao,v_nuc);
+   read_v_nuc(ao,v_nuc,Path);
 
 
 //Build H_core = T_int + v_nuc
@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
 //Read v_int
    cout << "Reading in interaction matrix" << endl;
    Real_4dMatrix v_int(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-   read_v_int(ao, v_int);
+   read_v_int(ao, v_int,Path);
 
 //calculate orthogonalization matrix, S^{-1/2}
    cout << "Calculating S^{-1/2}" << endl;
