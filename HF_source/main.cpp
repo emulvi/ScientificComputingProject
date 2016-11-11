@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <vector>
+#include <string>
 //#include <lapacke.h>
 #include "Eigen/Dense"
 #include "Eigen/Eigenvalues"
@@ -14,10 +15,6 @@
 #include "mp2_aux.cpp"
 
 using namespace std;
-
-/* DSYEV prototype */
-extern void dsyev( char* jobz, char* uplo, int* n, double* a, int* lda,
-                double* w, double* work, int* lwork, int* info );
 
 
 typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
@@ -29,8 +26,28 @@ int main(int argc, char* argv[])
 {
 //Assuming restricted hartree fock, read in arguments from commandline
 
-   int ao = atoi(argv[1]);
-   int occ = atoi(argv[2]);
+   int ao;
+   int occ;
+   char* Path;
+
+   //if (i + 1 != argc){ // Check that we haven't finished parsing already
+   for (int i=1; i<4; i=i+2){
+
+      if (argv[i] == "-ao") {
+         ao =  atoi(argv[i + 1]);
+            } else if (argv[i] == "-occ") {
+               occ = atoi(argv[i + 1]);
+                  } else if(argv[i] == "-files") {
+                    Path = argv[i + 1];
+                    };
+   };
+
+   cout << "ao is: " << ao << endl;
+   cout << "occ is " << occ << endl;
+   cout << "Path is " << Path << endl;
+
+
+
    cout <<"Number of orbitals/el: " << ao << endl;
 
 //Initializing energy

@@ -3,6 +3,7 @@
 #include <iomanip>
 //#include <cstdio>
 #include "hf_aux.hpp"
+#include <string>
 #include <vector>
 #include <cmath>
 #include <cstdlib>
@@ -241,4 +242,5 @@ void build_new_Fock(int ao, Matrix& P0, Real_4dMatrix& v_int, Matrix&H_core, Mat
    //cout << "New fock (G) = " << endl << Fock << endl;
 
 };
+
 
