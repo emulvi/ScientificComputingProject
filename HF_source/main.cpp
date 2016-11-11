@@ -7,6 +7,8 @@
 #include <cmath>
 #include <vector>
 #include <string>
+#include <string.h>
+#include <stdio.h>
 //#include <lapacke.h>
 #include "Eigen/Dense"
 #include "Eigen/Eigenvalues"
@@ -31,15 +33,17 @@ int main(int argc, char* argv[])
    char* Path;
 
    //if (i + 1 != argc){ // Check that we haven't finished parsing already
-   for (int i=1; i<4; i=i+2){
+   for (int i=1; i<7; i=i+2){
 
-      if (argv[i] == "-ao") {
+     if (strncmp(argv[i],"-ao",3)==0) {
          ao =  atoi(argv[i + 1]);
-            } else if (argv[i] == "-occ") {
-               occ = atoi(argv[i + 1]);
-                  } else if(argv[i] == "-files") {
-                    Path = argv[i + 1];
-                    };
+     } 
+     else if (strncmp(argv[i],"-occ",4)==0) {
+       occ = atoi(argv[i + 1]);
+     } 
+     else if(strncmp(argv[i], "-path",5)==0) {
+       Path = argv[i + 1];
+     };
    };
 
    cout << "ao is: " << ao << endl;
