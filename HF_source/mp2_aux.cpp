@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <vector>
 #include <cmath>
+#include <ctime>
 #include <cstdlib>
 #include <iomanip>
 
@@ -18,9 +19,8 @@ void transform_v_int(int ao, Matrix& C, Real_4dMatrix& v_int, Real_4dMatrix& v_i
    int i, j, k, l;
    int a,b,c,d;
  
-   Matrix Cmo = C.transpose();
-   //cout << "evecs in mp2 are" << evecs << endl;
-   evecs=C;
+   std::clock_t start;
+   start = std::clock();
  
    for(a=0; a < ao; a++) {
      for(b=0; b < ao; b++) {
@@ -32,7 +32,7 @@ void transform_v_int(int ao, Matrix& C, Real_4dMatrix& v_int, Real_4dMatrix& v_i
                for(k=0; k < ao; k++) {
                  for(l=0; l < ao; l++) {
   
-                   v_int_mo[a][b][c][d] += evecs(i,a) * evecs(j,b) * evecs(k,c) * evecs(l,d)*v_int[i][j][k][l]; 
+                   v_int_mo[a][b][c][d] += C(i,a) * C(j,b) * C(k,c) * C(l,d)*v_int[i][j][k][l]; 
 		   //cout << v_int_mo[a][b][b][d] << endl;
                  }
                }
@@ -43,7 +43,7 @@ void transform_v_int(int ao, Matrix& C, Real_4dMatrix& v_int, Real_4dMatrix& v_i
      }
    }
 
-  
+   std::cout << "Time in N^8: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;  
    return;
 };
 
@@ -52,6 +52,9 @@ void transform_v_int_2(int ao, Real_4dMatrix& v_int, Real_4dMatrix& v_int_mo_2, 
   Real_4dMatrix v1(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
   Real_4dMatrix v2(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
   Real_4dMatrix v3(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
+
+  std::clock_t start;
+  start = std::clock();
 
   for (a=0;a<ao;a++){
     for (b=0;b<ao;b++){
@@ -97,6 +100,8 @@ void transform_v_int_2(int ao, Real_4dMatrix& v_int, Real_4dMatrix& v_int_mo_2, 
       }
     }
   }
+
+   std::cout << "Time in N^5: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;
 
   return;
 }
