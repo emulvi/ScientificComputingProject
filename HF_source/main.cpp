@@ -51,14 +51,13 @@ int main(int argc, char* argv[])
    cout << "Path is " << Path << endl;
 
 
-
    cout <<"Number of orbitals/el: " << ao << endl;
 
 //Initializing energy
    double hf_energy=0;
 
 //read in nuclear energy term
-   double En_nuc = read_nuc_en();
+   double En_nuc = read_nuc_en(Path);
    std::cout << "Nuclear energy is: " << En_nuc << std::endl;
 
 //read in kinetic energy terms

@@ -4,6 +4,7 @@
 //#include <cstdio>
 #include "hf_aux.hpp"
 #include <string>
+#include <string.h>
 #include <vector>
 #include <cmath>
 #include <cstdlib>
@@ -15,10 +16,16 @@ typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> M
 typedef std::vector<vector<double> > Real_Matrix;
 typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 
-double read_nuc_en()
+double read_nuc_en(char* Path)
 {
+
+   stringstream ss;
+   ss << Path;
+   string name("");
+   name=ss.str()+"enuc.dat";
    double nuc_en;
-   std::ifstream nuc_ener("enuc.dat");
+   std::ifstream nuc_ener;
+   nuc_ener.open(name);
    while(!nuc_ener.eof()){
       nuc_ener >> nuc_en;
    }

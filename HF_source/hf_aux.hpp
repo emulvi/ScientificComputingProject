@@ -13,7 +13,7 @@ typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> M
 typedef std::vector<vector<double> > Real_Matrix;
 typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 
-double read_nuc_en();
+double read_nuc_en(char* Path);
 
 void read_T(int ao, Matrix& T_int);
 
