@@ -43,8 +43,14 @@ int main(int argc, char* argv[])
      } 
      else if(strncmp(argv[i], "-path",5)==0) {
        Path = argv[i + 1];
+     }
+     else {
+       cout << "The most commom command-ine options are: '-ao 7 -occ 5 -path Water_STO-3G'\n Try again with new input parameters......\n Now exiting. " << endl;
+       exit(0);
      };
    };
+
+
 
    cout << "ao is: " << ao << endl;
    cout << "occ is " << occ << endl;
