@@ -15,15 +15,15 @@ typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 
 double read_nuc_en(char* Path);
 
-void read_T(int ao, Matrix& T_int);
+void read_T(int ao, Matrix& T_int,char* Path);
 
-void read_S(int ao, Matrix& S);
+void read_S(int ao, Matrix& S, char* Path);
 
-void read_v_nuc(int ao, Matrix& v_nuc);
+void read_v_nuc(int ao, Matrix& v_nuc, char* Path);
 
 void build_H_core(int ao, Matrix& v_nuc, Matrix& T_int, Matrix& H_core);
 
-void read_v_int(int ao, Real_4dMatrix& v_int);
+void read_v_int(int ao, Real_4dMatrix& v_int, char* Path);
 
 void calculate_S12(int ao, Matrix& S, Matrix& S12, Matrix& Xmat);
 

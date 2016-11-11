@@ -10,7 +10,7 @@
 #include <cstdlib>
 #include <iomanip>
 //////Here are the functions required for HF
-
+using namespace std;
 
 typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
 typedef std::vector<vector<double> > Real_Matrix;
@@ -18,14 +18,17 @@ typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 
 double read_nuc_en(char* Path)
 {
-
-   stringstream ss;
-   ss << Path;
+   string ss(Path);
+   cout << ss << endl;
    string name("");
-   name=ss.str()+"enuc.dat";
+   name=ss +"/enuc.dat";
+   cout << name << endl;
    double nuc_en;
    std::ifstream nuc_ener;
    nuc_ener.open(name);
+   if (!nuc_ener.is_open()) {
+     cout << "Error: input file nuc_ener cannot open"<< endl;
+   }
    while(!nuc_ener.eof()){
       nuc_ener >> nuc_en;
    }
