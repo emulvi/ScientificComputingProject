@@ -183,11 +183,9 @@ int main(int argc, char* argv[])
 	 P2=P;
          cout << "deltaE is: " << deltaE << endl;
 	 C_mo = C_ao_new;
-	 cout << "C_ao_new at end of while\n" << C_ao_new << endl;
    }
 
 //Begin MP2 here
-   cout << "C_ao_new at beginning\n" << C_mo << endl;
    cout << "Beginning MP2" <<  endl;
 
 //transformation
