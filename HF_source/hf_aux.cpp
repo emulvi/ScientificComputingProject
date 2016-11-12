@@ -239,7 +239,7 @@ void build_P(int ao, int occ, Matrix& C_ao, Matrix &P0){
       }
    }
 
-   cout << "Initial Density matrix is: " << P0 << endl; 
+   //cout << "Initial Density matrix is: " << P0 << endl; 
    return;
 };
 

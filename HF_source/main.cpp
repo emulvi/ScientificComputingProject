@@ -12,12 +12,13 @@
 //#include <lapacke.h>
 #include "Eigen/Dense"
 #include "Eigen/Eigenvalues"
+#include "Eigen/Cholesky"
 #include "Eigen/Core"
 #include "hf_aux.cpp"
 #include "mp2_aux.cpp"
 
 using namespace std;
-
+//using namespace Eigen;
 
 typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
 typedef std::vector<vector<double> > Real_Matrix;
@@ -198,8 +199,11 @@ int main(int argc, char* argv[])
    cout << "Transforming to MO basis" << endl;
    Real_4dMatrix v_int_mo(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
    Real_4dMatrix v_int_mo_2(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
+   Real_4dMatrix v_int_mo_CD(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
    transform_v_int(ao, C_mo, v_int, v_int_mo, Xmat, evecs);
    transform_v_int_2(ao, v_int, v_int_mo_2, Xmat, C_mo);
+   transform_v_int_CD(ao, v_int, v_int_mo_CD, Xmat, C_mo);
+
 //calculate MP2 energy
    cout << "------------------------------------Calculating MP2 energy------------------------------------" << endl;
 ////////we want to get Emp2 = -0.049149636120
