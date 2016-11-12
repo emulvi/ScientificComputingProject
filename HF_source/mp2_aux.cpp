@@ -113,29 +113,26 @@ void transform_v_int_2(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, 
 
 void transform_v_int_CD(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, Matrix& C_mo){
   int a,b,c,d,e;
-//  Real_4dMatrix v1(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-//  Real_4dMatrix v2(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-//  Real_4dMatrix v3(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-//
-//  std::clock_t start;
-//  start = std::clock();
-//
-//
-//  std::cout << "Cholesky Decomp" << endl;
-//
-//  //Eigen::LDLT< Real_Matrix, Upper > ldlt_object(C_mo);
-//  //Eigen::Matrix C_mo(ao,ao);
-//  Eigen::LDLT<Matrix> ldltOfC_mo(C_mo);
-//  Matrix L = ldltOfC_mo.matrixL();
-//  Matrix D = ldltOfC_mo.vectorD();
-//  //Eigen::Diagonal<double Eigen::MatrixXd>vectorD() double;
-//  //Eigen::VectorXd D(C_mo.llt().vectorD() );
-//
-//  std::cout << "L is: " << L << std::endl;
-//  std::cout << "L^T is: " << L.transpose() << std::endl;
-//  std::cout << "D is: " << D << std::endl;
-//
-//  std::cout << "Time in N^4: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;
+
+  Matrix v1 = Matrix::Zero(ao*ao,ao*ao);
+  Matrix v2 = Matrix::Zero(ao*ao,ao*ao);
+  Matrix v3 = Matrix::Zero(ao*ao,ao*ao);
+
+  std::clock_t start;
+  start = std::clock();
+
+
+  std::cout << "Cholesky Decomp" << endl;
+
+  Eigen::LDLT<Matrix> ldltOfC_mo(C_mo);
+  Matrix L = ldltOfC_mo.matrixL();
+  Matrix D = ldltOfC_mo.vectorD();
+
+  std::cout << "L is: " << L << std::endl;
+  std::cout << "L^T is: " << L.transpose() << std::endl;
+  std::cout << "D is: " << D << std::endl;
+
+  std::cout << "Time in N^4: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;
 
   return;
 }
