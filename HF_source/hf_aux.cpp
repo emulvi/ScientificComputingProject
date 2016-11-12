@@ -125,7 +125,7 @@ void build_H_core(int ao, Matrix& v_nuc, Matrix& T_int, Matrix& H_core){
    return;
 }
 
-void read_v_int(int ao, Real_4dMatrix& v_int, char* Path){
+void read_v_int(int ao, Matrix& V, char* Path){
 
    double val;
    int i;
@@ -149,8 +149,10 @@ void read_v_int(int ao, Real_4dMatrix& v_int, char* Path){
       interaction >> k;
       interaction >> l;
       interaction >> val;
-      v_int[i-1][j-1][k-1][l-1] = val;
-      //std::cout << i << " " << j << " " << k << " " << l << " " << v_int[i-1][j-1][k-1][l-1] << std::endl;
+      V((i-1)*ao+j-1,(k-1)*ao+l-1)=val;
+
+
+
    }
 
    for (int mu=0; mu<ao;mu++){
@@ -158,14 +160,14 @@ void read_v_int(int ao, Real_4dMatrix& v_int, char* Path){
           for (int lam=0; lam<ao;lam++){
              for(int sig=0; sig<lam+1;sig++){
                    if (mu*(mu+1)/2 + nu >=lam*(lam+1)/2+sig){
-                        v_int[nu][mu][lam][sig]=v_int[mu][nu][lam][sig];
-                        v_int[mu][nu][sig][lam]=v_int[mu][nu][lam][sig];
-                        v_int[nu][mu][sig][lam]=v_int[mu][nu][lam][sig];
-                        //v_int[nu][mu][lam][sig]=v_int[mu][nu][lam][sig];
-                        v_int[lam][sig][mu][nu]=v_int[mu][nu][lam][sig];
-                        v_int[sig][lam][mu][nu]=v_int[mu][nu][lam][sig];
-                        v_int[lam][sig][nu][mu]=v_int[mu][nu][lam][sig];
-                        v_int[sig][lam][nu][mu]=v_int[mu][nu][lam][sig];
+                        V(nu*ao+mu,lam*ao+sig)=V(mu*ao+nu,lam*ao+sig);
+                        V(mu*ao+nu,sig*ao+lam)=V(mu*ao+nu,lam*ao+sig);
+                        V(lam*ao+sig,mu*ao+nu)=V(mu*ao+nu,lam*ao+sig);
+                        V(sig*ao+lam,mu*ao+nu)=V(mu*ao+nu,lam*ao+sig);
+                        V(lam*ao+sig,nu*ao+mu)=V(mu*ao+nu,lam*ao+sig);
+                        V(sig*ao+lam,nu*ao+mu)=V(mu*ao+nu,lam*ao+sig);
+                        V(nu*ao+mu,sig*ao+lam)=V(mu*ao+nu,lam*ao+sig); 
+
                     }
 
 
@@ -258,7 +260,7 @@ double calculate_En_elec(int ao, Matrix& P0, Matrix& H_core, Matrix& Fock){
 };
 
 
-void build_new_Fock(int ao, Matrix& P0, Real_4dMatrix& v_int, Matrix&H_core, Matrix&Fock){
+void build_new_Fock(int ao, Matrix& P0, Matrix& v_int, Matrix&H_core, Matrix&Fock){
 
    for (int i=0; i<ao ; i++){
       for (int j=0; j<ao ; j++){
@@ -266,7 +268,7 @@ void build_new_Fock(int ao, Matrix& P0, Real_4dMatrix& v_int, Matrix&H_core, Mat
          for (int k=0; k<ao ; k++){
              for (int l=0; l<ao ; l++){
 
-                 Fock(i,j)=Fock(i,j) +  P0(k,l)*(2*v_int[i][j][k][l]-v_int[i][k][j][l]);
+                 Fock(i,j)=Fock(i,j) +  P0(k,l)*(2*v_int(i*ao+j,k*ao+l)-v_int(i*ao+k,j*ao+l));
 
              }
           }

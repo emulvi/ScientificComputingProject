@@ -23,7 +23,7 @@ void read_v_nuc(int ao, Matrix& v_nuc, char* Path);
 
 void build_H_core(int ao, Matrix& v_nuc, Matrix& T_int, Matrix& H_core);
 
-void read_v_int(int ao, Real_4dMatrix& v_int, char* Path);
+void read_v_int(int ao, Matrix& V, char* Path);
 
 void calculate_S12(int ao, Matrix& S, Matrix& S12, Matrix& Xmat);
 
@@ -33,6 +33,6 @@ void build_P(int ao, int occ, Matrix& C_ao, Matrix &P0);
 
 double calculate_En_elec(int ao, Matrix& P0, Matrix& H_core, Matrix& Fock);
 
-void build_new_Fock(int ao, Matrix& P0, Real_4dMatrix& v_int, Matrix&H_core, Matrix&Fock);
+void build_new_Fock(int ao, Matrix& P0, Matrix& v_int, Matrix&H_core, Matrix&Fock);
 
 #endif

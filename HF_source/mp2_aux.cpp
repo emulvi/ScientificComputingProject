@@ -15,7 +15,7 @@ typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> M
 typedef std::vector<vector<double> > Real_Matrix;
 typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 
-void transform_v_int(int ao, Matrix& C, Real_4dMatrix& v_int, Real_4dMatrix& v_int_mo, Matrix& Xmat, Matrix& evecs){
+void transform_v_int(int ao, Matrix& C, Matrix& v_int, Matrix& v_int_mo, Matrix& Xmat, Matrix& evecs){
 
    int i, j, k, l;
    int a,b,c,d;
@@ -33,7 +33,7 @@ void transform_v_int(int ao, Matrix& C, Real_4dMatrix& v_int, Real_4dMatrix& v_i
                for(k=0; k < ao; k++) {
                  for(l=0; l < ao; l++) {
   
-                   v_int_mo[a][b][c][d] += C(i,a) * C(j,b) * C(k,c) * C(l,d)*v_int[i][j][k][l]; 
+                   v_int_mo(a*ao+b,c*ao+d) += C(i,a) * C(j,b) * C(k,c) * C(l,d)*v_int(i*ao+j,k*ao+l); 
 		   //cout << v_int_mo[a][b][b][d] << endl;
                  }
                }
@@ -48,11 +48,14 @@ void transform_v_int(int ao, Matrix& C, Real_4dMatrix& v_int, Real_4dMatrix& v_i
    return;
 };
 
-void transform_v_int_2(int ao, Real_4dMatrix& v_int, Real_4dMatrix& v_int_mo_2, Matrix& Xmat, Matrix& C_mo){
+void transform_v_int_2(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, Matrix& C_mo){
   int a,b,c,d,e;
-  Real_4dMatrix v1(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-  Real_4dMatrix v2(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-  Real_4dMatrix v3(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
+  //Real_4dMatrix v1(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
+  //Real_4dMatrix v2(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
+  //Real_4dMatrix v3(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
+  Matrix v1 = Matrix::Zero(ao*ao,ao*ao);
+  Matrix v2 = Matrix::Zero(ao*ao,ao*ao);
+  Matrix v3 = Matrix::Zero(ao*ao,ao*ao);
 
   std::clock_t start;
   start = std::clock();
@@ -62,7 +65,7 @@ void transform_v_int_2(int ao, Real_4dMatrix& v_int, Real_4dMatrix& v_int_mo_2, 
       for (c=0;c<ao;c++){	
 	for (d=0;d<ao;d++){
 	  for (e=0;e<ao;e++){
-	    v1[a][b][c][d] += v_int[a][b][c][e]*C_mo(e,d);
+	    v1(a*ao+b,c*ao+d) += v_int(a*ao+b,c*ao+e)*C_mo(e,d);
 	  }
 	}
       }
@@ -73,7 +76,7 @@ void transform_v_int_2(int ao, Real_4dMatrix& v_int, Real_4dMatrix& v_int_mo_2, 
       for (c=0;c<ao;c++){
 	for (d=0;d<ao;d++){
 	  for (e=0;e<ao;e++){
-	    v2[a][b][c][d] += v1[a][b][e][d]*C_mo(e,c);
+	    v2(a*ao+b,c*ao+d) += v1(a*ao+b,e*ao+d)*C_mo(e,c);
 	  }
 	}
       }
@@ -84,7 +87,7 @@ void transform_v_int_2(int ao, Real_4dMatrix& v_int, Real_4dMatrix& v_int_mo_2, 
       for (c=0;c<ao;c++){
 	for (d=0;d<ao;d++){
 	  for (e=0;e<ao;e++){
-	    v3[a][b][c][d] += v2[a][e][c][d]*C_mo(e,b);
+	    v3(a*ao+b,c*ao+d) += v2(a*ao+e,c*ao+d)*C_mo(e,b);
 	  }
 	}
       }
@@ -95,7 +98,7 @@ void transform_v_int_2(int ao, Real_4dMatrix& v_int, Real_4dMatrix& v_int_mo_2, 
       for (c=0;c<ao;c++){
 	for (d=0;d<ao;d++){
 	  for (e=0;e<ao;e++){
-	    v_int_mo_2[a][b][c][d] += v3[e][b][c][d]*C_mo(e,a);
+	    v_int_mo_2(a*ao+b,c*ao+d) += v3(e*ao+b,c*ao+d)*C_mo(e,a);
 	  }
 	}
       }
@@ -108,37 +111,37 @@ void transform_v_int_2(int ao, Real_4dMatrix& v_int, Real_4dMatrix& v_int_mo_2, 
 }
 
 
-void transform_v_int_CD(int ao, Real_4dMatrix& v_int, Real_4dMatrix& v_int_mo_2, Matrix& Xmat, Matrix& C_mo){
+void transform_v_int_CD(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, Matrix& C_mo){
   int a,b,c,d,e;
-  Real_4dMatrix v1(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-  Real_4dMatrix v2(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-  Real_4dMatrix v3(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-
-  std::clock_t start;
-  start = std::clock();
-
-
-  std::cout << "Cholesky Decomp" << endl;
-
-  //Eigen::LDLT< Real_Matrix, Upper > ldlt_object(C_mo);
-  //Eigen::Matrix C_mo(ao,ao);
-  Eigen::LDLT<Matrix> ldltOfC_mo(C_mo);
-  Matrix L = ldltOfC_mo.matrixL();
-  Matrix D = ldltOfC_mo.vectorD();
-  //Eigen::Diagonal<double Eigen::MatrixXd>vectorD() double;
-  //Eigen::VectorXd D(C_mo.llt().vectorD() );
-
-  std::cout << "L is: " << L << std::endl;
-  std::cout << "L^T is: " << L.transpose() << std::endl;
-  std::cout << "D is: " << D << std::endl;
-
-  std::cout << "Time in N^4: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;
+//  Real_4dMatrix v1(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
+//  Real_4dMatrix v2(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
+//  Real_4dMatrix v3(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
+//
+//  std::clock_t start;
+//  start = std::clock();
+//
+//
+//  std::cout << "Cholesky Decomp" << endl;
+//
+//  //Eigen::LDLT< Real_Matrix, Upper > ldlt_object(C_mo);
+//  //Eigen::Matrix C_mo(ao,ao);
+//  Eigen::LDLT<Matrix> ldltOfC_mo(C_mo);
+//  Matrix L = ldltOfC_mo.matrixL();
+//  Matrix D = ldltOfC_mo.vectorD();
+//  //Eigen::Diagonal<double Eigen::MatrixXd>vectorD() double;
+//  //Eigen::VectorXd D(C_mo.llt().vectorD() );
+//
+//  std::cout << "L is: " << L << std::endl;
+//  std::cout << "L^T is: " << L.transpose() << std::endl;
+//  std::cout << "D is: " << D << std::endl;
+//
+//  std::cout << "Time in N^4: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;
 
   return;
 }
 
 
-double calculate_E_mp2(int ao, int occ, Matrix& evals, Real_4dMatrix& v_int_mo){
+double calculate_E_mp2(int ao, int occ, Matrix& evals, Matrix& v_int_mo){
    double E_mp2 = 0.0;
 
    //cout << "evals in mp2 are: " << evals << endl;
@@ -150,7 +153,7 @@ double calculate_E_mp2(int ao, int occ, Matrix& evals, Real_4dMatrix& v_int_mo){
 	 for(int a=occ; a < ao; a++) {
 	   for(int b=occ; b < ao; b++) {
 
-            E_mp2 += v_int_mo[i][a][j][b]*(2*v_int_mo[i][a][j][b]-v_int_mo[i][b][j][a])/(evals(i)+evals(j)-evals(a)-evals(b));
+            E_mp2 += v_int_mo(i*ao+a,j*ao+b)*(2*v_int_mo(i*ao+a,j*ao+b)-v_int_mo(i*ao+b,j*ao+a))/(evals(i)+evals(j)-evals(a)-evals(b));
 
          }
        }

@@ -17,12 +17,12 @@ typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 
 
 
-void transform_v_int(int ao, Matrix& C, Real_4dMatrix& v_int, Real_4dMatrix& v_int_mo, Matrix& Xmat, Matrix& evecs);
+void transform_v_int(int ao, Matrix& C, Matrix& v_int, Matrix& v_int_mo, Matrix& Xmat, Matrix& evecs);
 
-void transform_v_int_2(int ao, Real_4dMatrix& v_int, Real_4dMatrix& v_int_mo_2, Matrix& Xmat, Matrix& C_mo);
+void transform_v_int_2(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, Matrix& C_mo);
 
-void transform_v_int_CD(int ao, Real_4dMatrix& v_int, Real_4dMatrix& v_int_mo_2, Matrix& Xmat, Matrix& C_mo);
+void transform_v_int_CD(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, Matrix& C_mo);
 
-double calculate_E_mp2(int ao, int occ, Matrix& evals, Real_4dMatrix& v_int_mo);
+double calculate_E_mp2(int ao, int occ, Matrix& evals, Matrix& v_int_mo);
 
 #endif

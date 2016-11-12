@@ -92,8 +92,8 @@ int main(int argc, char* argv[])
 
 //Read v_int
    cout << "Reading in interaction matrix" << endl;
-   Real_4dMatrix v_int(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-   read_v_int(ao, v_int,Path);
+   Matrix V = Matrix::Zero(ao*ao,ao*ao);
+   read_v_int(ao, V,Path);
 
 //calculate orthogonalization matrix, S^{-1/2}
    cout << "Calculating S^{-1/2}" << endl;
@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
 //   Matrix Fock_new = Matrix::Zero(ao,ao);
 //   build_new_Fock(ao, P0, v_int, H_core, Fock_new);
    Matrix Fock_new = Matrix::Zero(ao,ao);
-   build_new_Fock(ao, P0, v_int, H_core, Fock_new);
+   build_new_Fock(ao, P0, V, H_core, Fock_new);
 
 //Build new Density Matrix
    cout << "Building new Density matrix, Pnew" << endl;
@@ -166,26 +166,23 @@ int main(int argc, char* argv[])
       //Build new Fock matrix, call it G
          cout << "Building new Fock matrix, G" << endl;
          Matrix Fock_new = Matrix::Zero(ao,ao);
-         build_new_Fock(ao, P0, v_int, H_core, Fock_new);
+         build_new_Fock(ao, P0, V, H_core, Fock_new);
       
       //Build new Density Matrix
          cout << "Building new Density matrix, Pnew" << endl;
-         //Matrix P = Matrix::Zero(ao,ao);
          Matrix C_ao_new = Matrix::Zero(ao,ao);
 	 Matrix P = Matrix::Zero(ao,ao);
          diagonalize_Fock(ao, Fock_new, Xmat, C_ao_new, evals, evecs);
          build_P(ao, occ, C_ao_new, P);
-	 //cout << "P after function: \n" << P << endl;
+
       //Compute new SCF Energy
          En_elec_new =calculate_En_elec(ao, P, H_core, Fock_new);
          En_total = En_elec_new + En_nuc;
-	 //cout << "P after energy: \n" << P << endl;
          cout << "Total Energy is ...." << endl;
          cout << En_elec_new << "+" << En_nuc << "=" << En_total << endl;
 	 
 	 iteration = iteration + 1;
       
-         //cout << "The energy is: " << hf_energy << endl;
          deltaE = En_elec_new-En_elec;
 	 P2=P;
          cout << "deltaE is: " << deltaE << endl;
@@ -197,18 +194,19 @@ int main(int argc, char* argv[])
 
 //transformation
    cout << "Transforming to MO basis" << endl;
-   Real_4dMatrix v_int_mo(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-   Real_4dMatrix v_int_mo_2(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-   Real_4dMatrix v_int_mo_CD(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-   transform_v_int(ao, C_mo, v_int, v_int_mo, Xmat, evecs);
-   transform_v_int_2(ao, v_int, v_int_mo_2, Xmat, C_mo);
-   transform_v_int_CD(ao, v_int, v_int_mo_CD, Xmat, C_mo);
+   Matrix V_mo = Matrix::Zero(ao*ao,ao*ao);
+   Matrix V_mo_2 = Matrix::Zero(ao*ao,ao*ao);
+   Matrix V_mo_CD = Matrix::Zero(ao*ao,ao*ao);
+
+   transform_v_int(ao, C_mo, V, V_mo, Xmat, evecs);
+   transform_v_int_2(ao, V, V_mo_2, Xmat, C_mo);
+   transform_v_int_CD(ao, V, V_mo_CD, Xmat, C_mo);
 
 //calculate MP2 energy
    cout << "------------------------------------Calculating MP2 energy------------------------------------" << endl;
 ////////we want to get Emp2 = -0.049149636120
-   double Emp2 = calculate_E_mp2(ao, occ, evals, v_int_mo);
-   double Emp2_2 = calculate_E_mp2(ao, occ, evals, v_int_mo_2);
+   double Emp2 = calculate_E_mp2(ao, occ, evals, V_mo);
+   double Emp2_2 = calculate_E_mp2(ao, occ, evals, V_mo_2);
 
    cout << "The final energy is: " << En_elec_new + Emp2 + En_nuc <<endl; 
    cout << "The final energy with the N^5 v_int_mo is: " << En_elec_new + Emp2_2 + En_nuc << endl;
