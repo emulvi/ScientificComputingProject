@@ -124,16 +124,36 @@ void transform_v_int_CD(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat,
 
   std::cout << "Cholesky Decomp" << endl;
 
-  Eigen::LDLT<Matrix> ldltOfC_mo(C_mo);
-  Matrix L = ldltOfC_mo.matrixL();
-  Matrix D = ldltOfC_mo.vectorD();
+  Eigen::LLT<Matrix> lltOfC_mo(C_mo);
+  Matrix L = lltOfC_mo.matrixL();
+//  Matrix D = ldltOfC_mo.vectorD();
 
   std::cout << "L is: " << L << std::endl;
   std::cout << "L^T is: " << L.transpose() << std::endl;
-  std::cout << "D is: " << D << std::endl;
+//  std::cout << "D is: " << D << std::endl;
 
-  std::cout << "Time in N^4: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;
+  Eigen::LLT<Matrix> lltOfL(L);
+  Matrix LL = lltOfL.matrixL();
 
+  Eigen::LLT<Matrix> lltOfLT(L.transpose());
+  Matrix LT = lltOfLT.matrixL();
+//  Matrix D = ldltOfC_mo.vectorD();
+
+
+  std::cout << "LL is: " << LL << std::endl;
+  std::cout << "LL^T is: " << LL.transpose() << std::endl;
+
+  std::cout << "LT is: " << LT << std::endl;
+  std::cout << "LT^T is: " << LT.transpose() << std::endl;
+
+
+
+  Matrix tempA = Matrix::Zero(ao,ao);
+  Matrix tempB = Matrix::Zero(ao,ao);
+  Matrix tempC = Matrix::Zero(ao,ao);
+  Matrix tempD = Matrix::Zero(ao,ao);
+
+  std::cout << "Time in N^3: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;
   return;
 }
 
@@ -145,6 +165,7 @@ double calculate_E_mp2(int ao, int occ, Matrix& evals, Matrix& v_int_mo){
    int docc=5;
    occ=docc;
 
+   cout << "hello" << endl;
    for(int i=0; i < occ; i++) {
        for(int j=0; j < occ; j++) {
 	 for(int a=occ; a < ao; a++) {
