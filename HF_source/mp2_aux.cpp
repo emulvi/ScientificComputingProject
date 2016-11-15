@@ -130,30 +130,59 @@ void transform_v_int_CD(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat,
 
   std::cout << "L is: " << L << std::endl;
   std::cout << "L^T is: " << L.transpose() << std::endl;
+  std::cout << "the shape of L is: " << L.size() << L.cols() << L.rows() << std::endl;
+
 //  std::cout << "D is: " << D << std::endl;
 
-  Eigen::LLT<Matrix> lltOfL(L);
-  Matrix LL = lltOfL.matrixL();
-
-  Eigen::LLT<Matrix> lltOfLT(L.transpose());
-  Matrix LT = lltOfLT.matrixL();
-//  Matrix D = ldltOfC_mo.vectorD();
-
-
-  std::cout << "LL is: " << LL << std::endl;
-  std::cout << "LL^T is: " << LL.transpose() << std::endl;
-
-  std::cout << "LT is: " << LT << std::endl;
-  std::cout << "LT^T is: " << LT.transpose() << std::endl;
-
-
+//  Eigen::LLT<Matrix> lltOfL(L);
+//  Matrix LL = lltOfL.matrixL();
+//
+//  Eigen::LLT<Matrix> lltOfLT(L.transpose());
+//  Matrix LT = lltOfLT.matrixL();
+////  Matrix D = ldltOfC_mo.vectorD();
+//
+//
+//  std::cout << "LL is: " << LL << std::endl;
+//  std::cout << "LL^T is: " << LL.transpose() << std::endl;
+//
+//  std::cout << "LT is: " << LT << std::endl;
+//  std::cout << "LT^T is: " << LT.transpose() << std::endl;
 
   Matrix tempA = Matrix::Zero(ao,ao);
   Matrix tempB = Matrix::Zero(ao,ao);
-  Matrix tempC = Matrix::Zero(ao,ao);
-  Matrix tempD = Matrix::Zero(ao,ao);
+  Matrix tmpLT = L.transpose();
+  for (int i=0;i<ao;i++){
+    for (int j=0;j<ao;j++){
+      for (int sig=0;sig<ao;sig++){
+        for (int rho=0;rho<ao;rho++){
+           tempA(i,j) += C_mo(sig,i)*C_mo(rho,j)*tmpLT(sig,rho);
+        }
+      }
+    }
+  }
+  
 
-  std::cout << "Time in N^3: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;
+  for (int a=0;a<ao;a++){
+    for (int b=0;b<ao;b++){
+      for (int mu=0;mu<ao;mu++){
+        for (int nu=0;nu<ao;nu++){
+           tempB(a,b) += C_mo(a,mu)*C_mo(b,nu)*L(mu,nu)*tempA(a,b);
+        }
+      }
+    }
+  }
+
+  for (int a=0;a<ao;a++){
+    for (int b=0;b<ao;b++){
+      for (int i=0;i<ao;i++){
+        for (int j=0;j<ao;j++){
+           v_int_mo_2(a*ao+b,i*ao+j) += tempB(a,b)*tempA(i,j);
+        }
+      }
+    }
+  }
+
+  std::cout << "Time in N^4: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;
   return;
 }
 
