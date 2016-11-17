@@ -50,9 +50,8 @@ void transform_v_int(int ao, Matrix& C, Matrix& v_int, Matrix& v_int_mo, Matrix&
 
 void transform_v_int_2(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, Matrix& C_mo){
   int a,b,c,d,e;
-  //Real_4dMatrix v1(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-  //Real_4dMatrix v2(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-  //Real_4dMatrix v3(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
+
+
   Matrix v1 = Matrix::Zero(ao*ao,ao*ao);
   Matrix v2 = Matrix::Zero(ao*ao,ao*ao);
   Matrix v3 = Matrix::Zero(ao*ao,ao*ao);
@@ -112,9 +111,8 @@ void transform_v_int_2(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, 
 
 void transform_v_int_3(int occ, int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, Matrix& C_mo){
   int a,b,c,d,e;
-  //Real_4dMatrix v1(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-  //Real_4dMatrix v2(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
-  //Real_4dMatrix v3(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
+
+
   Matrix v1 = Matrix::Zero(ao*ao,ao*ao);
   Matrix v2 = Matrix::Zero(ao*ao,ao*ao);
   Matrix v3 = Matrix::Zero(ao*ao,ao*ao);
