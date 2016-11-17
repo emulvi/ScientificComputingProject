@@ -110,6 +110,69 @@ void transform_v_int_2(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, 
   return;
 }
 
+void transform_v_int_3(int occ, int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, Matrix& C_mo){
+  int a,b,c,d,e;
+  //Real_4dMatrix v1(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
+  //Real_4dMatrix v2(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
+  //Real_4dMatrix v3(ao, vector<vector<vector<double> > >(ao, vector<vector<double> >(ao, vector<double>(ao,0.0))));
+  Matrix v1 = Matrix::Zero(ao*ao,ao*ao);
+  Matrix v2 = Matrix::Zero(ao*ao,ao*ao);
+  Matrix v3 = Matrix::Zero(ao*ao,ao*ao);
+
+  std::clock_t start;
+  start = std::clock();
+
+
+  for (a=0;a<ao;a++){
+    for (b=0;b<ao;b++){
+      for (c=0;c<ao;c++){	
+	for (d=occ;d<ao;d++){
+	  for (e=0;e<ao;e++){
+	    v1(a*ao+b,c*ao+d) += v_int(a*ao+b,c*ao+e)*C_mo(e,d);
+	  }
+	}
+      }
+    }
+  }
+  for (a=0;a<ao;a++){
+    for (b=0;b<ao;b++){
+      for (c=0;c<occ;c++){
+	for (d=occ;d<ao;d++){
+	  for (e=0;e<ao;e++){
+	    v2(a*ao+b,c*ao+d) += v1(a*ao+b,e*ao+d)*C_mo(e,c);
+	  }
+	}
+      }
+    }
+  }
+  for (a=0;a<ao;a++){
+    for (b=occ;b<ao;b++){
+      for (c=0;c<occ;c++){
+	for (d=occ;d<ao;d++){
+	  for (e=0;e<ao;e++){
+	    v3(a*ao+b,c*ao+d) += v2(a*ao+e,c*ao+d)*C_mo(e,b);
+	  }
+	}
+      }
+    }
+  }
+  for (a=0;a<occ;a++){
+    for (b=occ;b<ao;b++){
+      for (c=0;c<occ;c++){
+	for (d=occ;d<ao;d++){
+	  for (e=0;e<ao;e++){
+	    v_int_mo_2(a*ao+b,c*ao+d) += v3(e*ao+b,c*ao+d)*C_mo(e,a);
+	  }
+	}
+      }
+    }
+  }
+
+   std::cout << "Time in v^2o^2: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;
+
+  return;
+}
+
 
 void transform_v_int_CD(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, Matrix& C_mo){
   int a,b,c,d,e;

@@ -196,10 +196,12 @@ int main(int argc, char* argv[])
    cout << "Transforming to MO basis" << endl;
    Matrix V_mo = Matrix::Zero(ao*ao,ao*ao);
    Matrix V_mo_2 = Matrix::Zero(ao*ao,ao*ao);
+   Matrix V_mo_3 = Matrix::Zero(ao*ao,ao*ao);
    Matrix V_mo_CD = Matrix::Zero(ao*ao,ao*ao);
 
    transform_v_int(ao, C_mo, V, V_mo, Xmat, evecs);
    transform_v_int_2(ao, V, V_mo_2, Xmat, C_mo);
+   transform_v_int_3(occ, ao, V, V_mo_3, Xmat, C_mo);
    transform_v_int_CD(ao, V, V_mo_CD, Xmat, C_mo);
 
 //calculate MP2 energy
@@ -207,10 +209,12 @@ int main(int argc, char* argv[])
 ////////we want to get Emp2 = -0.049149636120
    double Emp2 = calculate_E_mp2(ao, occ, evals, V_mo);
    double Emp2_2 = calculate_E_mp2(ao, occ, evals, V_mo_2);
+   double Emp2_3 = calculate_E_mp2(ao, occ, evals, V_mo_3);
    double Emp2_CD = calculate_E_mp2(ao,occ,evals, V_mo_CD);
 
    cout << "The final energy is: " << En_elec_new + Emp2 + En_nuc <<endl; 
    cout << "The final energy with the N^5 v_int_mo is: " << En_elec_new + Emp2_2 + En_nuc << endl;
+   cout << "The final energy with the o^2v^2N v_int_mo is: " << En_elec_new + Emp2_3 + En_nuc << endl;
    cout << "The final energy with the N^3 v_int_mo is: " << En_elec_new + Emp2_CD + En_nuc << endl;
    return 0;
 }
