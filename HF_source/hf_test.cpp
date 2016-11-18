@@ -45,7 +45,7 @@ char *path ="Water_STO-3G";
 
 double En = hf_main(ao,occ,path);
 
-if (abs(abs(En)-74.9421)<=pow(10,-4)){cout << "HF_Energy:  ... Test passed" << endl;}else{cout << "HF_Energy:  ... Test failed" << endl;}
+if (abs(abs(En)-74.9421)<=pow(10,-4)){cout << "HF_Energy:       ...Test passed" << endl;}else{cout << "HF_Energy:       ...Test failed" << endl;}
 
 }
 
