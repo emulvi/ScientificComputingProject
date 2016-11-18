@@ -30,23 +30,28 @@ int main(int argc, char* argv[])
    int occ;
    char* Path;
 
-   for (int i=1; i<7; i=i+2){
-
-     if (strncmp(argv[i],"-ao",3)==0) {
+   if (argc >1){
+     for (int i=1; i<7; i=i+2){
+       if (strncmp(argv[i],"-ao",3)==0) {
          ao =  atoi(argv[i + 1]);
-     } 
-     else if (strncmp(argv[i],"-occ",4)==0) {
-       occ = atoi(argv[i + 1]);
-     } 
-     else if(strncmp(argv[i], "-path",5)==0) {
-       Path = argv[i + 1];
+       } 
+       else if (strncmp(argv[i],"-occ",4)==0) {
+	 occ = atoi(argv[i + 1]);
+       } 
+       else if(strncmp(argv[i], "-path",5)==0) {
+	 Path = argv[i + 1];
+       }
+       else {
+	 cout << "The most common command-line options are: '-ao 7 -occ 5 -path Water_STO-3G'\n Try again with new input parameters......\n Now exiting. " << endl;
+	 exit(0);
+       }
      }
-     else {
-       cout << "The most common command-line options are: '-ao 7 -occ 5 -path Water_STO-3G'\n Try again with new input parameters......\n Now exiting. " << endl;
-       exit(0);
-     };
-   };
-   
+   }
+   else{
+     cout << "Too few command line arguments. The most common command-line options are: '-ao 7 -occ 5 -path Water_STO-3G'\n Try again with command line arguments. \n Now exiting." << endl;
+     exit(0);
+   }
+
    cout << "Initial Values" << endl;
    cout << "\t" << "ao:     " << ao << endl;
    cout << "\t" << "occ:    " << occ << endl;
