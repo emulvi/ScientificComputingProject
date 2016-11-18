@@ -109,6 +109,78 @@ void transform_v_int_2(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, 
   return;
 }
 
+
+//Sahil's addition
+
+void transform_v_int_Sahil_parallel_try(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, Matrix& C_mo){
+  int a,b,c,d,e,r,s,t,u;
+
+
+  Matrix v1 = Matrix::Zero(ao*ao,ao*ao);
+  Matrix v2 = Matrix::Zero(ao*ao,ao*ao);
+  Matrix v3 = Matrix::Zero(ao*ao,ao*ao);
+
+  std::clock_t start;
+  start = std::clock();
+
+  for (r=0;r<ao;r++){
+    for (s=0;s<ao;s++){
+      for (t=0;t<ao;t++){
+        for (u=0;u<ao;u++){
+          for (d=0;d<ao;d++){
+            v_int(r*ao+s,t*ao+d) += v_int(r*ao+s,t*ao+u)*C_mo(u,d);
+          }
+        }
+      }
+    }
+  }
+  for (r=0;r<ao;r++){
+    for (s=0;s<ao;s++){
+      for (d=0;d<ao;d++){
+        for (t=0;t<ao;t++){
+          for (c=0;c<ao;c++){
+            v_int(r*ao+s,c*ao+d) += v_int(r*ao+s,t*ao+d)*C_mo(t,c);
+          }
+        }
+      }
+    }
+  }
+  for (r=0;r<ao;r++){
+    for (s=0;s<ao;s++){
+      for (d=0;d<ao;d++){
+        for (c=0;c<ao;c++){
+	for (b=0;b<ao;b++){
+            v_int(r*ao+b,c*ao+d) += v_int(r*ao+s,c*ao+d)*C_mo(s,b);
+          }
+        }
+      }
+    }
+  }
+  for (r=0;r<ao;r++){
+    for (t=0;t<ao;t++){
+      for (d=0;d<ao;d++){
+        for (c=0;c<ao;c++){
+          for (b=0;b<ao;b++){
+	    for (a=0;a<ao;a++){
+            	v_int(a*ao+b,c*ao+d) += v_int(r*ao+b,t*ao+d)*C_mo(r,a);
+		v_int_mo_2(a*ao+b,c*ao+d) = v_int(a*ao+b,c*ao+d);
+	    }
+          }
+        }
+      }
+    }
+  }
+   
+   std::cout << "Time in N^5: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;
+
+  return;
+}
+
+//Sahil's done here
+
+
+
+
 void transform_v_int_3(int occ, int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, Matrix& C_mo){
   int a,b,c,d,e;
 
