@@ -15,7 +15,7 @@ typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> M
 typedef std::vector<vector<double> > Real_Matrix;
 typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 
-void transform_v_int(int ao, Matrix& C, Matrix& v_int, Matrix& v_int_mo, Matrix& Xmat, Matrix& evecs){
+void transform_v_int(int ao, Matrix& C, Matrix& v_int, Matrix& v_int_mo){
 
    int i, j, k, l;
    int a,b,c,d;
@@ -44,11 +44,11 @@ void transform_v_int(int ao, Matrix& C, Matrix& v_int, Matrix& v_int_mo, Matrix&
      }
    }
 
-   std::cout << "Time in N^8: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;  
+   std::cout << "\t" << "Time in N^8: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;  
    return;
 };
 
-void transform_v_int_2(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, Matrix& C_mo){
+void transform_v_int_2(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& C_mo){
   int a,b,c,d,e;
 
 
@@ -104,7 +104,7 @@ void transform_v_int_2(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, 
     }
   }
 
-   std::cout << "Time in N^5: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;
+  std::cout << "\t" << "Time in N^5: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;
 
   return;
 }
@@ -112,7 +112,7 @@ void transform_v_int_2(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, 
 
 //Sahil's addition
 
-void transform_v_int_Sahil_parallel_try(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, Matrix& C_mo){
+void transform_v_int_Sahil_parallel_try(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& C_mo){
   int a,b,c,d,e,r,s,t,u;
 
 
@@ -171,7 +171,7 @@ void transform_v_int_Sahil_parallel_try(int ao, Matrix& v_int, Matrix& v_int_mo_
     }
   }
    
-   std::cout << "Time in N^5: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;
+  std::cout << "\t" << "Time in N^5: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;
 
   return;
 }
@@ -181,7 +181,7 @@ void transform_v_int_Sahil_parallel_try(int ao, Matrix& v_int, Matrix& v_int_mo_
 
 
 
-void transform_v_int_3(int occ, int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, Matrix& C_mo){
+void transform_v_int_3(int occ, int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& C_mo){
   int a,b,c,d,e;
 
 
@@ -238,13 +238,13 @@ void transform_v_int_3(int occ, int ao, Matrix& v_int, Matrix& v_int_mo_2, Matri
     }
   }
 
-   std::cout << "Time in v^2o^2: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;
+  std::cout << "\t" << "Time in v^2o^2: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;
 
   return;
 }
 
 
-void transform_v_int_CD(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat, Matrix& C_mo){
+void transform_v_int_CD(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& C_mo){
   int a,b,c,d,e;
 
   Matrix v1 = Matrix::Zero(ao*ao,ao*ao);
@@ -315,19 +315,14 @@ void transform_v_int_CD(int ao, Matrix& v_int, Matrix& v_int_mo_2, Matrix& Xmat,
     }
   }
 
-  std::cout << "Time in N^4: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;
+  std::cout << "\t" << "Time in N^4: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC/1000) << "ms" << endl;
   return;
 }
 
 
-double calculate_E_mp2(int ao, int occ, Matrix& evals, Matrix& v_int_mo){
+double calculate_E_mp2(int ao, int occ, Matrix& evals, Matrix& v_int_mo, string sname){
    double E_mp2 = 0.0;
 
-   //cout << "evals in mp2 are: " << evals << endl;
-   int docc=5;
-   occ=docc;
-
-   cout << "hello" << endl;
    for(int i=0; i < occ; i++) {
        for(int j=0; j < occ; j++) {
 	 for(int a=occ; a < ao; a++) {
@@ -340,6 +335,41 @@ double calculate_E_mp2(int ao, int occ, Matrix& evals, Matrix& v_int_mo){
      }
    }
 
-   cout << "MP2 energy: " << E_mp2 << endl;
+   cout << "\t" << sname << " MP2 energy: " << E_mp2 << endl;
    return E_mp2;
 };
+
+
+double mp2_main(int ao, int occ, char* Path, Matrix& V, Matrix& C_mo, Matrix& evals, double En_total){ 
+
+  cout << "Transforming to MO basis" << endl;
+  Matrix V_mo = Matrix::Zero(ao*ao,ao*ao);
+  Matrix V_mo_2 = Matrix::Zero(ao*ao,ao*ao);
+  Matrix V_mo_sahil = Matrix::Zero(ao*ao,ao*ao);
+  Matrix V_mo_3 = Matrix::Zero(ao*ao,ao*ao);
+  //Matrix V_mo_CD = Matrix::Zero(ao*ao,ao*ao); 
+  
+  transform_v_int(ao, C_mo, V, V_mo);
+  transform_v_int_2(ao, V, V_mo_2, C_mo);
+  transform_v_int_3(occ, ao, V, V_mo_3, C_mo);
+  //transform_v_int_CD(ao, V, V_mo_CD, C_mo);                                        
+  transform_v_int_Sahil_parallel_try(ao, V, V_mo_sahil, C_mo);
+
+  //calculate MP2 energy                         
+  ////////we want to get Emp2 = -0.049149636120            
+  cout << "Calculating MP2 energy" << endl;
+  double Emp2 = calculate_E_mp2(ao, occ, evals, V_mo, "N^8");
+  double Emp2_2 = calculate_E_mp2(ao, occ, evals, V_mo_2, "N^5");
+  double Emp2_3 = calculate_E_mp2(ao, occ, evals, V_mo_3, "v^2o^2");
+  double Emp2_sahil = calculate_E_mp2(ao, occ, evals, V_mo_sahil, "sahil");
+  //double Emp2_CD = calculate_E_mp2(ao,occ,evals, V_mo_CD, "CD");
+
+  cout << "Calculating total energy with MP2 correction" << endl;
+  cout << "\t" << "The final energy is: " << En_total + Emp2 <<endl;
+  cout << "\t" << "The final energy with the N^5 v_int_mo is: " << En_total + Emp2_2 << endl;
+  cout << "\t" << "The final energy with SAHIL's v_int_mo is: " << En_total + Emp2_sahil << endl;
+  cout << "\t" << "The final energy with the o^2v^2N v_int_mo is: " << En_total + Emp2_3 << endl;
+  //cout << "The final energy with the N^3 v_int_mo is: " << En_total + Emp2_CD << endl;
+
+  return Emp2;
+}

@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
-//#include <cstdio>
 #include <iomanip>
 #include <cstdlib>
 #include <cmath>
@@ -9,7 +8,6 @@
 #include <string>
 #include <string.h>
 #include <stdio.h>
-//#include <lapacke.h>
 #include "Eigen/Dense"
 #include "Eigen/Eigenvalues"
 #include "Eigen/Cholesky"
@@ -18,7 +16,6 @@
 #include "mp2_aux.cpp"
 
 using namespace std;
-//using namespace Eigen;
 
 typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
 typedef std::vector<vector<double> > Real_Matrix;
@@ -33,7 +30,6 @@ int main(int argc, char* argv[])
    int occ;
    char* Path;
 
-   //if (i + 1 != argc){ // Check that we haven't finished parsing already
    for (int i=1; i<7; i=i+2){
 
      if (strncmp(argv[i],"-ao",3)==0) {
@@ -46,180 +42,28 @@ int main(int argc, char* argv[])
        Path = argv[i + 1];
      }
      else {
-       cout << "The most commom command-ine options are: '-ao 7 -occ 5 -path Water_STO-3G'\n Try again with new input parameters......\n Now exiting. " << endl;
+       cout << "The most common command-line options are: '-ao 7 -occ 5 -path Water_STO-3G'\n Try again with new input parameters......\n Now exiting. " << endl;
        exit(0);
      };
    };
-
-
-
-   cout << "ao is: " << ao << endl;
-   cout << "occ is " << occ << endl;
-   cout << "Path is " << Path << endl;
-
-
-   cout <<"Number of orbitals/el: " << ao << endl;
-
-//Initializing energy
-   double hf_energy=0;
-
-//read in nuclear energy term
-   double En_nuc = read_nuc_en(Path);
-   std::cout << "Nuclear energy is: " << En_nuc << std::endl;
-
-//read in kinetic energy terms
-   cout << "Reading in Kinetic Energy Matrix" << endl;
-   Matrix T_int = Matrix::Zero(ao,ao);
-   //Real_Matrix T_int(ao,vector<double>(ao,0.0));
-   read_T(ao, T_int,Path);
-
-
-//read in overlap matrix
-   cout << "Reading in Overlap Matrix" << endl;
-   Matrix S = Matrix::Zero(ao,ao);
-   read_S(ao,S,Path);
- 
-//read in v_nuc
-   cout << "Reading in Interaction Matrix Matrix" << endl;
-   Matrix v_nuc  = Matrix::Zero(ao,ao);
-   read_v_nuc(ao,v_nuc,Path);
-
-
-//Build H_core = T_int + v_nuc
-   cout << "Building H_core" << endl;
-   Matrix H_core = Matrix::Zero(ao,ao);
-   build_H_core(ao, v_nuc, T_int, H_core);
-
-//Read v_int
-   cout << "Reading in interaction matrix" << endl;
-   Matrix V = Matrix::Zero(ao*ao,ao*ao);
-   read_v_int(ao, V,Path);
-
-//calculate orthogonalization matrix, S^{-1/2}
-   cout << "Calculating S^{-1/2}" << endl;
-   Matrix S12 = Matrix::Zero(ao,ao);
-   Matrix Xmat = Matrix::Zero(ao,ao);
-   calculate_S12(ao, S, S12, Xmat);
-
-//Diagonalize Fock
-   cout << "Diagonalizing Fock" << endl;
-   Matrix Fock = Matrix::Zero(ao,ao);
-   Matrix C_ao = Matrix::Zero(ao,ao);
-   Matrix evals = Matrix::Zero(ao,ao);
-   Matrix evecs = Matrix::Zero(ao,ao);
-   diagonalize_Fock(ao, H_core, Xmat, C_ao, evals, evecs);
-
-//Build density matrix
-   cout << "Building initial guess for Density Matrix" << endl;
-
-
-//Build new Fock matrix, call it G
-   cout << "Building new Fock matrix, G" << endl;
-   Matrix P0 = Matrix::Zero(ao,ao);
-   build_P(ao, occ, C_ao, P0);
-
-
-//initial SCF electronic energy
-
-   cout << "calculating the initial SCF energy: " << endl;
-
-   Matrix Fock2 = H_core;
-
-   double En_elec =calculate_En_elec(ao, P0, H_core, Fock2);
-   double En_total = En_elec + En_nuc;
-
-   cout << "Total Energy is ...." << endl;
-   cout << En_elec << "+" << En_nuc << "=" << En_total << endl;
-
-
-
-////Build new Fock matrix, call it G
-//   cout << "Building new Fock matrix, G" << endl;
-//   Matrix Fock_new = Matrix::Zero(ao,ao);
-//   build_new_Fock(ao, P0, v_int, H_core, Fock_new);
-   Matrix Fock_new = Matrix::Zero(ao,ao);
-   build_new_Fock(ao, P0, V, H_core, Fock_new);
-
-//Build new Density Matrix
-   cout << "Building new Density matrix, Pnew" << endl;
-   Matrix P = Matrix::Zero(ao,ao);
-   Matrix C_ao_new = Matrix::Zero(ao,ao);
-   diagonalize_Fock(ao, Fock_new, Xmat, C_ao_new, evals, evecs);
-   build_P(ao, occ, C_ao_new, P);
-
-   double En_elec_new =calculate_En_elec(ao, P, H_core, Fock_new);
-   Matrix P2 = Matrix::Zero(ao,ao);
-   P2=P;
-
-   cout << "before procedure En_elec new is : " << En_elec_new << endl;
-   int iteration = 2;
-////////////Begin SCF Procedure
-   double deltaE = 10;
+   
+   cout << "Initial Values" << endl;
+   cout << "\t" << "ao:     " << ao << endl;
+   cout << "\t" << "occ:    " << occ << endl;
+   cout << "\t" << "Path:   " << Path << endl;
+   
    Matrix C_mo = Matrix::Zero(ao,ao);
-   while (abs(deltaE) > 0.000000000001) {
-         cout << "--------------------------------------Iteration: " << iteration <<"-------------------------------------"<< endl;
-         En_elec=En_elec_new;
-	 cout << "En_elec is: " << En_elec << endl;
-         P0=P2;
-	 //cout << "Density matrix: \n" << P0 << endl;
+   Matrix V = Matrix::Zero(ao*ao,ao*ao);
+   Matrix evals = Matrix::Zero(ao,ao);
+   double En_total = 0;
+   double Emp2 = 0;
 
-      //Build new Fock matrix, call it G
-         cout << "Building new Fock matrix, G" << endl;
-         Matrix Fock_new = Matrix::Zero(ao,ao);
-         build_new_Fock(ao, P0, V, H_core, Fock_new);
-      
-      //Build new Density Matrix
-         cout << "Building new Density matrix, Pnew" << endl;
-         Matrix C_ao_new = Matrix::Zero(ao,ao);
-	 Matrix P = Matrix::Zero(ao,ao);
-         diagonalize_Fock(ao, Fock_new, Xmat, C_ao_new, evals, evecs);
-         build_P(ao, occ, C_ao_new, P);
+   En_total = hf_main(ao, occ, Path, V, C_mo, evals);
 
-      //Compute new SCF Energy
-         En_elec_new =calculate_En_elec(ao, P, H_core, Fock_new);
-         En_total = En_elec_new + En_nuc;
-         cout << "Total Energy is ...." << endl;
-         cout << En_elec_new << "+" << En_nuc << "=" << En_total << endl;
-	 
-	 iteration = iteration + 1;
-      
-         deltaE = En_elec_new-En_elec;
-	 P2=P;
-         cout << "deltaE is: " << deltaE << endl;
-	 C_mo = C_ao_new;
-   }
-
-//Begin MP2 here
    cout << "Beginning MP2" <<  endl;
+   
+   Emp2 = mp2_main(ao, occ, Path, V, C_mo, evals, En_total);
 
-//transformation
-   cout << "Transforming to MO basis" << endl;
-   Matrix V_mo = Matrix::Zero(ao*ao,ao*ao);
-   Matrix V_mo_2 = Matrix::Zero(ao*ao,ao*ao);
-   Matrix V_mo_sahil = Matrix::Zero(ao*ao,ao*ao);
-   Matrix V_mo_3 = Matrix::Zero(ao*ao,ao*ao);
-   Matrix V_mo_CD = Matrix::Zero(ao*ao,ao*ao);
-
-   transform_v_int(ao, C_mo, V, V_mo, Xmat, evecs);
-   transform_v_int_2(ao, V, V_mo_2, Xmat, C_mo);
-   transform_v_int_3(occ, ao, V, V_mo_3, Xmat, C_mo);
-   transform_v_int_CD(ao, V, V_mo_CD, Xmat, C_mo);
-   transform_v_int_Sahil_parallel_try(ao, V, V_mo_sahil, Xmat, C_mo);
-
-//calculate MP2 energy
-   cout << "------------------------------------Calculating MP2 energy------------------------------------" << endl;
-////////we want to get Emp2 = -0.049149636120
-   double Emp2 = calculate_E_mp2(ao, occ, evals, V_mo);
-   double Emp2_2 = calculate_E_mp2(ao, occ, evals, V_mo_2);
-   double Emp2_3 = calculate_E_mp2(ao, occ, evals, V_mo_3);
-   double Emp2_sahil = calculate_E_mp2(ao, occ, evals, V_mo_sahil);
-   double Emp2_CD = calculate_E_mp2(ao,occ,evals, V_mo_CD);
-
-   cout << "The final energy is: " << En_elec_new + Emp2 + En_nuc <<endl; 
-   cout << "The final energy with the N^5 v_int_mo is: " << En_elec_new + Emp2_2 + En_nuc << endl;
-   cout << "The final energy with SAHIL's the N^5 v_int_mo is: " << En_elec_new + Emp2_sahil + En_nuc << endl;
-   cout << "The final energy with the o^2v^2N v_int_mo is: " << En_elec_new + Emp2_3 + En_nuc << endl;
-   cout << "The final energy with the N^3 v_int_mo is: " << En_elec_new + Emp2_CD + En_nuc << endl;
    return 0;
 }
 

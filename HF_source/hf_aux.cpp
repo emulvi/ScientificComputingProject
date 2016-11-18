@@ -9,7 +9,6 @@
 #include <cmath>
 #include <cstdlib>
 #include <iomanip>
-//////Here are the functions required for HF
 using namespace std;
 
 typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
@@ -30,7 +29,6 @@ double read_nuc_en(char* Path)
    while(!nuc_ener.eof()){
       nuc_ener >> nuc_en;
    }
-  // cout << "in read_nuc routine en = " << nuc_en << endl;
 
    return nuc_en;
 
@@ -58,8 +56,8 @@ void read_T(int ao, Matrix& T_int,char* Path){
       kin_en >> val;
       T_int(i-1,j-1) = val;
       T_int(j-1,i-1) = T_int(i-1,j-1);
-      //std::cout << i << " " << j << " " << T_int(i-1,j-1) << std::endl;
    }
+
    return;
 }
 
@@ -84,8 +82,8 @@ void read_S(int ao, Matrix& S,char* Path){
       overlap >> val;
       S(i-1,j-1) = val;
       S(j-1,i-1) = S(i-1,j-1);
-      //std::cout << i << " " << j << " " << S(i-1,j-1) << std::endl;
    }
+
    return;
 }
 
@@ -110,8 +108,8 @@ void read_v_nuc(int ao, Matrix& v_nuc, char* Path){
       interaction >> val;
       v_nuc(i-1,j-1) = val;
       v_nuc(j-1,i-1) = v_nuc(i-1,j-1);
-      //std::cout << i << " " << j << " " << v_nuc(i-1,j-1) << std::endl;
    }
+
    return;
 
 }
@@ -185,23 +183,11 @@ void calculate_S12(int ao, Matrix& S, Matrix& S12, Matrix& Xmat){
    Matrix evecs = solver.eigenvectors();
    Matrix evals = solver.eigenvalues();
 
-   //std::cout << "eigenvectors are: " << evecs << std::endl;
-   //std::cout << "eigenvalues are: " << evals << std::endl;
-
    for (int i=0; i < ao ; i++){
-      //for (int j=0; j < ao ; j++){
-          //std::cout << evals(i) << std::endl;
-          S12(i,i)=1/sqrt(evals(i));
-      //}
+     S12(i,i)=1/sqrt(evals(i));
    }
-   
-   //std::cout << "Square root of eigenvalues are: " << S12 << std::endl;
-   
-   //Matrix evecs_trans = evecs.transpose();
+    
    Xmat = evecs*S12*evecs.transpose();
-
-   //std::cout << "Xmat is: " << Xmat << endl;
-
 
    return;
 };
@@ -216,12 +202,7 @@ void diagonalize_Fock(int ao, Matrix& H_core, Matrix& Xmat, Matrix& C_ao, Matrix
    evecs = solver.eigenvectors();
    evals = solver.eigenvalues();
 
-   //cout << "this is what evals looks like" << evals << endl;
-   //cout << "this is what evecs looks like" << evecs << endl;
    C_ao=Xmat*evecs;
-
-   //cout << "C_ao in AO basis is: " << C_ao << endl;
-
 
    return;
 
@@ -241,7 +222,6 @@ void build_P(int ao, int occ, Matrix& C_ao, Matrix &P0){
       }
    }
 
-   //cout << "Initial Density matrix is: " << P0 << endl; 
    return;
 };
 
@@ -255,7 +235,6 @@ double calculate_En_elec(int ao, Matrix& P0, Matrix& H_core, Matrix& Fock){
       }
    }
 
-   //cout << "En_elec in loop is: " << En << endl;
    return En;
 };
 
@@ -275,71 +254,56 @@ void build_new_Fock(int ao, Matrix& P0, Matrix& v_int, Matrix&H_core, Matrix&Foc
       }
    }
 
-   //cout << "New fock (G) = " << endl << Fock << endl;
+   return;
+}
 
-};
+double hf_main(int ao, int occ, char *Path, Matrix& V, Matrix& C_mo, Matrix& evals){
 
-double hf_main(int ao, int occ, char *Path){
-//Assuming restricted hartree fock, read in arguments from commandline
-
-//   int ao;
-//   int occ;
-//   char* Path;
-
-   //if (i + 1 != argc){ // Check that we haven't finished parsing already
-
-//Initializing energy
+  //Initializing energy
    double hf_energy=0;
 
-//read in nuclear energy term
+   //read in nuclear energy term
    double En_nuc = 0;
    En_nuc = read_nuc_en(Path);
 
-//read in kinetic energy terms
+   //read in kinetic energy terms
    Matrix T_int = Matrix::Zero(ao,ao);
-   //Real_Matrix T_int(ao,vector<double>(ao,0.0));
    read_T(ao, T_int,Path);
 
-
-//read in overlap matrix
+   //read in overlap matrix
    Matrix S = Matrix::Zero(ao,ao);
    read_S(ao,S,Path);
  
-//read in v_nuc
+   //read in v_nuc
    Matrix v_nuc  = Matrix::Zero(ao,ao);
    read_v_nuc(ao,v_nuc,Path);
 
-
-//Build H_core = T_int + v_nuc
+   //Build H_core = T_int + v_nuc
    Matrix H_core = Matrix::Zero(ao,ao);
    build_H_core(ao, v_nuc, T_int, H_core);
 
-//Read v_int
-   Matrix V = Matrix::Zero(ao*ao,ao*ao);
+   //Read v_int
+   //Matrix V = Matrix::Zero(ao*ao,ao*ao);
    read_v_int(ao, V,Path);
 
-//calculate orthogonalization matrix, S^{-1/2}
+   //calculate orthogonalization matrix, S^{-1/2}
    Matrix S12 = Matrix::Zero(ao,ao);
    Matrix Xmat = Matrix::Zero(ao,ao);
    calculate_S12(ao, S, S12, Xmat);
 
-//Diagonalize Fock
+   //Diagonalize Fock
    Matrix Fock = Matrix::Zero(ao,ao);
    Matrix C_ao = Matrix::Zero(ao,ao);
-   Matrix evals = Matrix::Zero(ao,ao);
+   //Matrix evals = Matrix::Zero(ao,ao);
    Matrix evecs = Matrix::Zero(ao,ao);
    diagonalize_Fock(ao, H_core, Xmat, C_ao, evals, evecs);
 
-//Build density matrix
-
-
-//Build new Fock matrix, call it G
+   //Build density matrix
    Matrix P0 = Matrix::Zero(ao,ao);
    build_P(ao, occ, C_ao, P0);
 
 
-//initial SCF electronic energy
-
+   //initial SCF electronic energy
 
    Matrix Fock2 = H_core;
 
@@ -349,13 +313,11 @@ double hf_main(int ao, int occ, char *Path){
 
 
 
-////Build new Fock matrix, call it G
-//   Matrix Fock_new = Matrix::Zero(ao,ao);
-//   build_new_Fock(ao, P0, v_int, H_core, Fock_new);
+   ////Build new Fock matrix, call it G
    Matrix Fock_new = Matrix::Zero(ao,ao);
    build_new_Fock(ao, P0, V, H_core, Fock_new);
 
-//Build new Density Matrix
+   //Build new Density Matrix
    Matrix P = Matrix::Zero(ao,ao);
    Matrix C_ao_new = Matrix::Zero(ao,ao);
    diagonalize_Fock(ao, Fock_new, Xmat, C_ao_new, evals, evecs);
@@ -366,9 +328,9 @@ double hf_main(int ao, int occ, char *Path){
    P2=P;
 
    int iteration = 2;
-////////////Begin SCF Procedure
+   ////////////Begin SCF Procedure
    double deltaE = 10;
-   Matrix C_mo = Matrix::Zero(ao,ao);
+   //Matrix C_mo = Matrix::Zero(ao,ao);
    while (abs(deltaE) > 0.000000000001) {
          En_elec=En_elec_new;
          P0=P2;
