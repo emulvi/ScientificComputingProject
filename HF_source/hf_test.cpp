@@ -45,7 +45,7 @@ char *path ="Water_STO-3G";
 
 double En = hf_main(ao,occ,path);
 
-if (abs(abs(En)-74.9421)<=pow(10,-4)){cout << "Test passed" << endl;}else{cout << "Test failed" << endl;}
+if (abs(abs(En)-74.9421)<=pow(10,-4)){cout << "HF_Energy:  ... Test passed" << endl;}else{cout << "HF_Energy:  ... Test failed" << endl;}
 
 }
 
@@ -59,6 +59,6 @@ char *path = "Water_STO-3G";
 
 double En_nuc = read_nuc_en(path);
 
-if (abs(abs(En_nuc)-8.002367061810450)<=pow(10,-8)){cout << "Test passed" << endl;}else{cout << "Test failed" << endl;}
+if (abs(abs(En_nuc)-8.002367061810450)<=pow(10,-8)){cout << "Nuclear_Energy:  ...Test passed" << endl;}else{cout << "Nuclear_Energy:  ...Test failed" << endl;}
 
 };
