@@ -20,10 +20,18 @@ typedef std::vector<vector<double> > Real_Matrix;
 typedef std::vector<vector<vector<vector<double> > > > Real_4dMatrix;
 
 
+void test_En_nuc();
+
+
 int main()
 {
 
+test_En_nuc();
 
+
+}
+
+void test_En_nuc(){
 int ao = 7;
 int occ = 5;
 char *path = "Water_STO-3G";
@@ -34,5 +42,4 @@ std::cout << "Nuclear energy is: " << En_nuc << std::endl;
 
 if (En_nuc-8.002367061810450<=pow(10,-8)){cout << "Test passed" << endl;}
 
-
-}
+};
